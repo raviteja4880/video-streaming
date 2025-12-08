@@ -1,0 +1,63 @@
+/* Feed page - full width layout */
+.feed-page {
+  width: 100%;
+  min-height: 100vh;
+  background: none; /* transparent */
+  color: #f1f1f1;
+  padding: 2rem 0; /* no horizontal padding */
+  font-family: 'Inter', 'Poppins', sans-serif;
+}
+
+/* Center header text */
+.feed-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.feed-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.feed-subtitle {
+  font-size: 0.95rem;
+  color: #a0a0a0;
+}
+
+/* ✅ Full-width responsive video grid */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 videos per row */
+  gap: 1.5rem;
+  width: 100%;
+  padding: 0 2rem; /* small side padding */
+  box-sizing: border-box;
+}
+
+/* ✅ Make it responsive */
+@media (max-width: 1600px) {
+  .video-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .video-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .video-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

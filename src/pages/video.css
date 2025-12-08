@@ -1,0 +1,134 @@
+.video-page {
+  color: #fff;
+}
+
+.video-player-container {
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.video-player {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.video-title {
+  font-weight: 600;
+  color: #fff;
+}
+
+.video-actions .btn-like,
+.video-actions .btn-share {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.video-actions .btn-like:hover,
+.video-actions .btn-share:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+/* Placeholder fix */
+input::placeholder,
+textarea::placeholder {
+  color: #c9c9c9 !important;
+  opacity: 1 !important;
+  font-style: italic;
+}
+
+/* Input field */
+input.form-control.bg-dark {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+  border: 1px solid #3a3a3a !important;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+input.form-control.bg-dark:focus {
+  border-color: #4a68ff !important;
+  box-shadow: 0 0 8px rgba(74, 104, 255, 0.5);
+  outline: none;
+  background-color: #181818 !important;
+}
+
+/* Delete icon */
+.icon-delete-btn {
+  background: transparent;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-delete-btn:hover {
+  color: #ff7777;
+  transform: scale(1.15);
+}
+
+/* Toastify theme fix */
+.Toastify__toast-theme--dark {
+  background: #111 !important;
+  color: #fff !important;
+  border: 1px solid #333;
+}
+
+.icon-delete-btn {
+  background: transparent;
+  border: none;
+  color: #ff5c5c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+}
+
+.icon-delete-btn:hover {
+  color: #ff7b7b;
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+/* Related Videos Section */
+.related-section {
+  background: #111;
+  border: 1px solid #222;
+  color: #fff;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.related-item {
+  background: #181818;
+  border-radius: 6px;
+  transition: transform 0.3s ease;
+}
+
+.related-item:hover {
+  transform: scale(1.02);
+}
+
+.related-thumb {
+  width: 120px;
+  height: 70px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #000;
+}
+
+.related-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.related-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+}

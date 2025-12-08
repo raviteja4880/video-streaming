@@ -1,0 +1,58 @@
+/* ===== 🎬 Streamify Global Theme ===== */
+
+.app-background {
+  /* Deep gradient background */
+  background: linear-gradient(180deg, #0a0a0a 0%, #141414 40%, #1b1b1b 100%);
+  color: #f1f1f1;
+  min-height: 100vh;
+  font-family: 'Inter', 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Smooth transitions for route changes */
+.app-background * {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Navbar consistency */
+.navbar {
+  background-color: rgba(20, 20, 20, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Buttons (global tone) */
+.btn-primary {
+  background-color: #e50914;
+  border-color: #e50914;
+}
+
+.btn-primary:hover {
+  background-color: #f6121d;
+  border-color: #f6121d;
+}
+
+/* Scrollbar styling for desktop users */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #101010;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* Page containers */
+.container,
+.container-fluid {
+  padding-bottom: 3rem;
+}
