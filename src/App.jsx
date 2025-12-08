@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Lazy-loaded pages
 const Feed = lazy(() => import('./pages/Feed'));
-const MyVideos = lazy(() => import('./pages/MyVideos'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Upload = lazy(() => import('./pages/Upload'));
 const Video = lazy(() => import('./pages/Video'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -78,10 +78,10 @@ function AnimatedRoutes() {
           }
         />
         <Route
-          path="/my-videos"
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              <MyVideos />
+              <Dashboard />
             </ProtectedRoute>
           }
         />

@@ -1,70 +1,67 @@
-import React, { useState } from 'react'
-import api from '../api/client'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react';
+import api from '../api/client';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function RegisterVerify() {
-  const [step, setStep] = useState('register') // 'register' | 'verify'
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [otp, setOtp] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [msg, setMsg] = useState('')
-  const nav = useNavigate()
+  const [step, setStep] = useState('register');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [busy, setBusy] = useState(false);
+  const nav = useNavigate();
 
   /** Register new user */
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setBusy(true)
-    setMsg('')
+    e.preventDefault();
+    setBusy(true);
     try {
-      const { data } = await api.post('/auth/register', { name, email, password })
+      const { data } = await api.post('/users/register', { name, email, password });
       if (data?.user?.email) {
-        setEmail(data.user.email) // ensure email filled
-        setStep('verify') // move to verify step
-        setMsg('Registration successful! Check your email for OTP.')
+        setEmail(data.user.email);
+        setStep('verify');
+        toast.success('Registration successful! Check your email for OTP.');
       } else {
-        setMsg('Something went wrong, please try again.')
+        toast.warn('Something went wrong, please try again.');
       }
     } catch (err) {
-      setMsg(err.response?.data?.message || err.message)
+      toast.error(err.response?.data?.message || 'Registration failed');
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
-  }
+  };
 
   /** Verify OTP */
   const handleVerify = async (e) => {
-    e.preventDefault()
-    setBusy(true)
-    setMsg('')
+    e.preventDefault();
+    setBusy(true);
     try {
-      const { data } = await api.post('/auth/verify-otp', { email, code: otp })
-      setMsg(data.message || 'Email verified successfully!')
-      setTimeout(() => nav('/login', { replace: true }), 1500)
+      const { data } = await api.post('/users/verify-otp', { email, code: otp });
+      toast.success(data.message || 'Email verified successfully!');
+      setTimeout(() => nav('/login', { replace: true }), 1500);
     } catch (err) {
-      setMsg(err.response?.data?.message || err.message)
+      toast.error(err.response?.data?.message || 'Invalid or expired OTP');
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
-  }
+  };
 
   /** Resend OTP */
   const handleResend = async () => {
-    setBusy(true)
-    setMsg('')
+    setBusy(true);
     try {
-      const { data } = await api.post('/auth/resend-otp', { email })
-      setMsg(data.message || 'OTP resent to your email.')
+      const { data } = await api.post('/users/resend-otp', { email });
+      toast.info(data.message || 'OTP resent to your email.');
     } catch (err) {
-      setMsg(err.response?.data?.message || err.message)
+      toast.error(err.response?.data?.message || 'Failed to resend OTP');
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
-  }
+  };
 
   return (
-    <div className="mx-auto" style={{ maxWidth: 480 }}>
+    <div className="mx-auto p-4 bg-dark text-light rounded shadow" style={{ maxWidth: 480 }}>
       {step === 'register' ? (
         <form onSubmit={handleRegister}>
           <h3 className="mb-3 text-center">Create Account</h3>
@@ -72,7 +69,7 @@ export default function RegisterVerify() {
           <div className="mb-3">
             <label className="form-label">Full Name</label>
             <input
-              className="form-control"
+              className="form-control bg-dark text-light border-secondary"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -84,7 +81,7 @@ export default function RegisterVerify() {
             <label className="form-label">Email</label>
             <input
               type="email"
-              className="form-control"
+              className="form-control bg-dark text-light border-secondary"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -92,11 +89,11 @@ export default function RegisterVerify() {
             />
           </div>
 
-          <div className="mb-3">
+          <div className="mb-4">
             <label className="form-label">Password</label>
             <input
               type="password"
-              className="form-control"
+              className="form-control bg-dark text-light border-secondary"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -107,8 +104,6 @@ export default function RegisterVerify() {
           <button className="btn btn-primary w-100" disabled={busy}>
             {busy ? 'Registering...' : 'Register'}
           </button>
-
-          {msg && <div className="alert alert-info mt-3 text-center">{msg}</div>}
         </form>
       ) : (
         <form onSubmit={handleVerify}>
@@ -118,7 +113,7 @@ export default function RegisterVerify() {
             <label className="form-label">Email</label>
             <input
               type="email"
-              className="form-control"
+              className="form-control bg-dark text-light border-secondary"
               value={email}
               readOnly
             />
@@ -128,7 +123,7 @@ export default function RegisterVerify() {
             <label className="form-label">Enter OTP</label>
             <input
               type="text"
-              className="form-control"
+              className="form-control bg-dark text-light border-secondary"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required
@@ -149,10 +144,8 @@ export default function RegisterVerify() {
               Resend OTP
             </button>
           </div>
-
-          {msg && <div className="alert alert-secondary mt-3 text-center">{msg}</div>}
         </form>
       )}
     </div>
-  )
+  );
 }

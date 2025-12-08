@@ -10,11 +10,11 @@ export default function ProtectedRoute({ children }) {
 if (loading) return <GlobalLoader />;
 
 
-  // 🚫 Not logged in after loading → redirect
+  // Not logged in after loading → redirect
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // ✅ Authenticated → show content
+  // Authenticated → show content
   return children;
 }

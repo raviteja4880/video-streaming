@@ -1,0 +1,279 @@
+/* ---------- General Page Styles ---------- */
+.my-videos-page {
+  color: #fff;
+  min-height: 100vh;
+  padding: 1.5rem;
+  background-color: #0d0d0d;
+  transition: all 0.3s ease;
+}
+
+.my-videos-page h3,
+.my-videos-page h4,
+.my-videos-page h5 {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ---------- Stats Overview (Dashboard Top Section) ---------- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 1rem;
+  color: #e0e0e0;
+  transition: all 0.25s ease-in-out;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 12px rgba(0, 123, 255, 0.3);
+}
+
+.stat-icon {
+  font-size: 1.9rem;
+  opacity: 0.9;
+}
+
+.stat-card h5 {
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.stat-card small {
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+/* ---------- Chart Section ---------- */
+.chart-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  color: #fff;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.chart-card h5 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* ---------- Video Grid ---------- */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+/* ---------- Video Card ---------- */
+.video-card {
+  background: #18181b;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.25);
+}
+
+/* ---------- Video Thumbnail Container ---------- */
+.video-thumb-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: 1px solid #222;
+  background: #000;
+}
+
+.video-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---------- Hover Overlay (Edit/Delete Buttons) ---------- */
+.video-hover-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.video-thumb-container:hover .video-hover-overlay {
+  opacity: 1;
+}
+
+.video-hover-overlay .btn {
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.video-hover-overlay .btn:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- Video Meta Info ---------- */
+.video-meta {
+  padding: 0.9rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.video-title {
+  font-weight: 600;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+
+.video-description {
+  font-size: 0.9rem;
+  color: #aaa;
+  line-height: 1.3;
+  margin-bottom: 0.6rem;
+  min-height: 38px;
+}
+
+/* ---------- Video Stats ---------- */
+.video-stats {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #bbb;
+  gap: 8px;
+}
+
+.video-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---------- Thumbnail Upload Button ---------- */
+label.btn.btn-outline-light {
+  border: 1px solid #555;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.75rem;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+label.btn.btn-outline-light:hover {
+  background: #007bff;
+  color: #fff;
+  transform: scale(1.03);
+}
+
+/* ---------- Edit Mode ---------- */
+.form-control.bg-dark {
+  background: #111 !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+  border-radius: 6px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control.bg-dark:focus {
+  border-color: #007bff !important;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* ---------- Buttons (Save/Cancel etc.) ---------- */
+.btn-sm {
+  font-size: 0.82rem !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 6px !important;
+}
+
+.btn-success {
+  background-color: #28a745 !important;
+  border: none !important;
+}
+
+.btn-secondary {
+  background-color: #444 !important;
+  border: none !important;
+}
+
+.btn-secondary:hover {
+  background-color: #555 !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 992px) {
+  .video-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  .stat-card {
+    padding: 0.8rem;
+  }
+
+  .stat-icon {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .video-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .my-videos-page {
+    padding: 1rem;
+  }
+
+  .chart-card {
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-card {
+    border-radius: 8px;
+  }
+
+  .stat-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stat-icon {
+    font-size: 1.4rem;
+  }
+}

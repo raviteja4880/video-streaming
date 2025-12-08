@@ -1,25 +1,31 @@
+/* ---------- Video Card Link Wrapper ---------- */
 .video-card-link {
   text-decoration: none;
   color: inherit;
+  display: block;
+  transition: transform 0.3s ease;
 }
 
+.video-card-link:hover {
+  transform: translateY(-4px);
+}
+
+/* ---------- Video Card Container ---------- */
 .video-card {
-  background: #181818;
+  background: #18181b;
   border-radius: 10px;
   overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  height: 100%;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .video-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
 }
 
-/* Thumbnail container */
+/* ---------- Video Thumbnail ---------- */
 .video-thumbnail {
   position: relative;
   width: 100%;
@@ -32,23 +38,24 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 10px 10px 0 0;
-  transition: transform 0.3s ease;
+  display: block;
+  border-radius: 0;
+  transition: transform 0.4s ease;
 }
 
 .video-card:hover .video-preview {
   transform: scale(1.05);
 }
 
-/* Overlay with play icon */
+/* ---------- Overlay (Play Icon) ---------- */
 .video-overlay {
   position: absolute;
   inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.4);
-  opacity: 0;
   transition: opacity 0.3s ease;
 }
 
@@ -57,49 +64,109 @@
 }
 
 .play-icon {
-  color: #fff;
+  color: #ffffff;
   opacity: 0.9;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .video-card:hover .play-icon {
   transform: scale(1.15);
+  opacity: 1;
 }
 
-/* Info section */
+/* ---------- Video Info Section ---------- */
 .video-info {
-  padding: 0.9rem 1rem;
+  padding: 0.9rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex-grow: 1;
 }
 
-.video-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #f1f1f1;
-  margin-bottom: 0.4rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.video-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #aaa;
-}
-
+/* ---------- Author Info ---------- */
 .video-author {
-  color: #b0b0b0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.video-author-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #1f2937;
+}
+
+.video-author-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+/* ---------- Video Title ---------- */
+.video-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #fff;
+  line-height: 1.3;
+  margin-top: 0.4rem;
+}
+
+/* ---------- Meta Info (Likes etc.) ---------- */
+.video-meta {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .video-likes {
   display: flex;
   align-items: center;
-  gap: 4px;
-  color: #bbb;
+  gap: 6px;
+}
+
+.video-likes .text-danger {
+  color: #ef4444 !important;
+}
+
+/* ---------- Hover Effects ---------- */
+.video-card:hover .video-author-name {
+  color: #4f9eff;
+}
+
+.video-card:hover .video-title {
+  color: #ffffff;
+}
+
+/* ---------- Responsive Design ---------- */
+@media (max-width: 768px) {
+  .video-author-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .video-title {
+    font-size: 0.9rem;
+  }
+
+  .video-meta {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-card {
+    border-radius: 8px;
+  }
+
+  .video-info {
+    padding: 0.7rem;
+  }
+
+  .video-title {
+    font-size: 0.85rem;
+  }
 }

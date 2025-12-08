@@ -4,7 +4,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ Track loading state
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -15,16 +15,18 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
       }
     }
-    setLoading(false); // ✅ Done loading from storage
+    setLoading(false);
   }, []);
 
   const login = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData.user));
+    localStorage.setItem('token', userData.token);
+    setUser(userData.user);
   };
 
   const logout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     setUser(null);
   };
 

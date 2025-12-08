@@ -15,7 +15,7 @@ const api = axios.create({
   },
 });
 
-// ✅ Attach token automatically
+// Attach token automatically
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token'); 
@@ -27,7 +27,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Optional: global error handler
+// Optional: global error handler
 api.interceptors.response.use(
   (response) => response,
   (error) => {

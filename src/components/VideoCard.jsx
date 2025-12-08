@@ -1,7 +1,7 @@
 import React, { memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FaPlayCircle, FaHeart } from 'react-icons/fa';
-import '../pages/VideoCard.css';
+import '../pages/videoCard.css';
 
 function VideoCard({ video }) {
   const videoRef = useRef(null);
@@ -19,6 +19,10 @@ function VideoCard({ video }) {
       videoRef.current.currentTime = 0;
     }
   };
+
+  const avatarUrl =
+    video.user?.avatar ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(video.user?.name || 'User')}`;
 
   return (
     <Link
@@ -44,13 +48,23 @@ function VideoCard({ video }) {
         </div>
 
         <div className="video-info">
-          <h6 className="video-title">{video.title}</h6>
-          <div className="video-meta">
-            <span className="video-author">
+          {/* User section */}
+          <div className="video-author d-flex align-items-center gap-2 mb-1">
+            <img
+              src={avatarUrl}
+              alt={video.user?.name || 'User'}
+              className="video-author-avatar"
+            />
+            <span className="video-author-name">
               {video.user?.name || 'Unknown'}
             </span>
-            <span className="video-likes">
-              <FaHeart className="text-danger me-1" />
+          </div>
+
+          {/* Video title & likes */}
+          <h6 className="video-title mb-1">{video.title}</h6>
+          <div className="video-meta d-flex align-items-center justify-content-between">
+            <span className="video-likes d-flex align-items-center gap-1">
+              <FaHeart className="text-danger" />
               {video.likes?.length || 0}
             </span>
           </div>

@@ -10,8 +10,9 @@ export default function Upload() {
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
   const cancelToken = useRef(null);
+  const toastId = useRef(null); 
 
-  // ✅ File validation: type & size
+  // File validation
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
     if (!selected) return;
@@ -20,22 +21,22 @@ export default function Upload() {
     const allowedTypes = ['video/mp4', 'video/mkv', 'video/webm', 'video/quicktime'];
 
     if (!allowedTypes.includes(selected.type)) {
-      toast.error('❌ Invalid file type. Please upload a valid video (mp4, mkv, webm, mov).');
+      toast.error('Invalid file type. Please upload a valid video (mp4, mkv, webm, mov).');
       e.target.value = '';
       return;
     }
 
     if (selected.size > maxSizeMB * 1024 * 1024) {
-      toast.error(`⚠️ File too large! Maximum allowed size is ${maxSizeMB}MB.`);
+      toast.error(`File too large! Maximum allowed size is ${maxSizeMB}MB.`);
       e.target.value = '';
       return;
     }
 
     setFile(selected);
-    toast.success(`🎬 Selected: ${selected.name}`);
+    toast.success(`Selected: ${selected.name}`);
   };
 
-  // 🚀 Upload handler
+  // Upload handler
   const submit = async (e) => {
     e.preventDefault();
     if (!file) {
@@ -52,18 +53,16 @@ export default function Upload() {
     form.append('description', description);
 
     try {
-      // Create a cancel token (so users can cancel upload)
       cancelToken.current = axios.CancelToken.source();
+      toastId.current = toast.loading('Uploading video...');
 
-      const toastId = toast.loading('🚀 Uploading video...');
-
-      const res = await api.post('/videos', form, {
+      await api.post('/videos', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
         cancelToken: cancelToken.current.token,
         onUploadProgress: (e) => {
           const percent = Math.round((e.loaded * 100) / e.total);
           setProgress(percent);
-          toast.update(toastId, {
+          toast.update(toastId.current, {
             render: `Uploading: ${percent}%`,
             type: 'info',
             isLoading: true,
@@ -71,8 +70,8 @@ export default function Upload() {
         },
       });
 
-      toast.update(toastId, {
-        render: '✅ Upload complete! Go to Home to view your video.',
+      toast.update(toastId.current, {
+        render: 'Upload complete! Go to Home to view your video.',
         type: 'success',
         isLoading: false,
         autoClose: 2000,
@@ -84,22 +83,40 @@ export default function Upload() {
       setProgress(0);
     } catch (err) {
       if (axios.isCancel(err)) {
-        toast.warn('⛔ Upload cancelled.');
+        if (toastId.current) {
+          toast.update(toastId.current, {
+            render: 'Upload cancelled.',
+            type: 'warning',
+            isLoading: false,
+            autoClose: 1500,
+          });
+        }
       } else {
-        toast.error(`❌ Upload failed: ${err.response?.data?.message || err.message}`);
+        if (toastId.current) {
+          toast.update(toastId.current, {
+            render: `Upload failed: ${err.response?.data?.message || err.message}`,
+            type: 'error',
+            isLoading: false,
+            autoClose: 2000,
+          });
+        } else {
+          toast.error(`Upload failed: ${err.response?.data?.message || err.message}`);
+        }
       }
     } finally {
       setBusy(false);
+      cancelToken.current = null;
     }
   };
 
-  // ❌ Cancel upload
+  // Cancel upload
   const handleCancel = () => {
     if (cancelToken.current) {
       cancelToken.current.cancel('User cancelled the upload.');
-      setBusy(false);
-      setProgress(0);
+      cancelToken.current = null;
     }
+    setBusy(false);
+    setProgress(0);
   };
 
   return (

@@ -18,6 +18,37 @@
   color: #fff;
 }
 
+/* Description Section */
+.video-divider {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 0.5rem 0 1rem;
+}
+
+.video-description {
+  color: #b0b0b0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Like Button - Active State */
+.btn-like.liked {
+  background: #dc3545 !important;
+  color: #fff !important;
+  transform: scale(1.05);
+}
+
+.btn-like.liked:hover {
+  background: #b02a37 !important;
+  transform: scale(1.1);
+}
+
+/* Smooth transition */
+.btn-like {
+  transition: all 0.3s ease;
+}
+
+/* ACTION BUTTONS */
 .video-actions .btn-like,
 .video-actions .btn-share {
   background: #222;
@@ -31,10 +62,21 @@
 .video-actions .btn-like:hover,
 .video-actions .btn-share:hover {
   background: #007bff;
-  color: #fff;
 }
 
-/* Placeholder fix */
+.btn-like.liked {
+  animation: heartPulse 0.6s ease;
+  background: #dc3545;
+}
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.15); }
+}
+
+/* COMMENTS */
 input::placeholder,
 textarea::placeholder {
   color: #c9c9c9 !important;
@@ -42,7 +84,6 @@ textarea::placeholder {
   font-style: italic;
 }
 
-/* Input field */
 input.form-control.bg-dark {
   background-color: #121212 !important;
   color: #ffffff !important;
@@ -58,12 +99,12 @@ input.form-control.bg-dark:focus {
   background-color: #181818 !important;
 }
 
-/* Delete icon */
 .icon-delete-btn {
   background: transparent;
   border: none;
-  color: #ff4d4d;
+  color: #ff5c5c;
   cursor: pointer;
+  opacity: 0.7;
   transition: all 0.2s ease;
 }
 
@@ -72,29 +113,87 @@ input.form-control.bg-dark:focus {
   transform: scale(1.15);
 }
 
-/* Toastify theme fix */
-.Toastify__toast-theme--dark {
-  background: #111 !important;
-  color: #fff !important;
-  border: 1px solid #333;
+/* COMMENT SECTION */
+.comment-item {
+  background: #1a1d29;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
+.comment-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #2a2f3a;
+}
+
+/* Layout for comment header (name + time + delete) */
+.comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+/* Left side (name + timestamp) */
+.comment-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.comment-timestamp {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Delete icon styling */
 .icon-delete-btn {
   background: transparent;
   border: none;
   color: #ff5c5c;
   cursor: pointer;
+  opacity: 0.7;
   transition: all 0.2s ease;
-  opacity: 0.8;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon-delete-btn:hover {
-  color: #ff7b7b;
-  transform: scale(1.2);
+  color: #ff7777;
+  transform: scale(1.15);
   opacity: 1;
 }
 
-/* Related Videos Section */
+.comment-item .icon-delete-btn {
+  opacity: 0;
+}
+
+.comment-item:hover .icon-delete-btn {
+  opacity: 1;
+}
+
+.comment-text {
+  font-size: 14px;
+  color: #d1d5db;
+  margin: 0;
+}
+
+
+/* RELATED VIDEOS */
 .related-section {
   background: #111;
   border: 1px solid #222;
