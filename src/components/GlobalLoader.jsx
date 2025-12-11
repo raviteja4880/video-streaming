@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import './GlobalLoader.css'; // ✅ We'll create this next
+import './GlobalLoader.css';
 
 export default function GlobalLoader() {
   return (

@@ -1,5 +1,36 @@
-body { background: #0b0c10; color: #eaf6ff; }
-a { text-decoration: none; }
+/* Global Dark Theme */
+body {
+  background-color: #0d0d0d !important;
+  color: #ffffff;
+  margin: 0;
+  font-family: 'Inter', 'Poppins', sans-serif;
+}
+
+.feed-page,
+.history-page,
+.my-videos-page {
+  background-color: #0d0d0d !important;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.card,
+.bg-light {
+  background-color: #1a1a1a !important;
+  color: #fff !important;
+}
+
+input,
+textarea {
+  background-color: #1a1a1a !important;
+  color: #fff !important;
+  border: 1px solid #333 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #aaa !important;
+}
 .card { background: #12141a; border: 1px solid #1f232d; }
 .form-control, .form-select { background: #0f1117; color: #eaf6ff; border-color: #222; }
 .btn-primary { background: #5a67d8; border-color: #5a67d8; }
@@ -119,4 +150,250 @@ a { text-decoration: none; }
 .video-stats span {
   display: flex;
   align-items: center;
+}
+
+/* ---------- Top Navbar Avatar ---------- */
+.nav-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #fff;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.nav-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.nav-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+}
+
+/* ---------- Active Nav Highlight ---------- */
+.nav-item.active .nav-link {
+  color: #00bcd4 !important;
+  font-weight: 600;
+}
+
+/* ---------- Bottom Navigation Bar (Mobile) ---------- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #121212;
+  border-top: 1px solid #222;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.5rem 0;
+  z-index: 999;
+  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.4);
+}
+
+.bottom-nav button {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-weight: 500;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.bottom-nav button span {
+  font-size: 0.7rem;
+}
+
+.bottom-nav button.active {
+  color: #00bcd4;
+}
+
+.bottom-nav button:hover {
+  color: #00bcd4;
+  transform: translateY(-2px);
+}
+
+/* Hide top navbar shadow on small screens for clarity */
+@media (max-width: 992px) {
+  .navbar {
+    padding-bottom: 3rem; /* space for bottom nav */
+  }
+}
+
+/* ---------- Profile Page Layout ---------- */
+.profile-page {
+  min-height: 100vh;
+  background-color: #0d0d0d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem 1rem 3rem; /* padding-top leaves room for navbar */
+  color: #fff;
+}
+
+/* ---------- Card Container ---------- */
+.profile-card {
+  background: #181818;
+  border-radius: 12px;
+  border: 1px solid #2a2a2a;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+.profile-card:hover {
+  box-shadow: 0 0 20px rgba(0, 188, 212, 0.15);
+}
+
+/* ---------- Logout Button ---------- */
+.logout-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: 1px solid #ff4d4d;
+  color: #ff4d4d;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #ff4d4d;
+  color: #fff;
+}
+
+/* ---------- Avatar Section ---------- */
+.profile-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 0 10px rgba(0, 188, 212, 0.2);
+}
+
+.avatar-upload-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #007bff;
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.4rem;
+  border: 2px solid #fff;
+  cursor: pointer;
+  transform: translate(25%, 25%);
+  transition: all 0.3s ease;
+}
+
+.avatar-upload-btn:hover {
+  background: #00bcd4;
+  transform: translate(25%, 25%) scale(1.1);
+}
+
+.profile-name {
+  margin-top: 1rem;
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.profile-email {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* ---------- Form Styles ---------- */
+.profile-form .form-label {
+  color: #ccc;
+  font-weight: 500;
+}
+
+.profile-form .form-control {
+  background: #111 !important;
+  color: #fff !important;
+  border: 1px solid #333 !important;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-form .form-control:focus {
+  border-color: #00bcd4 !important;
+  box-shadow: 0 0 5px rgba(0, 188, 212, 0.4);
+}
+
+.profile-form button {
+  font-weight: 600;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #007bff, #00bcd4);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.profile-form button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+}
+
+/* ---------- Responsive Design ---------- */
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 1.5rem;
+  }
+
+  .profile-avatar {
+    width: 110px;
+    height: 110px;
+  }
+
+  .profile-page {
+    padding-top: 7rem;
+  }
+
+  .logout-btn {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 1rem;
+  }
+
+  .profile-avatar {
+    width: 95px;
+    height: 95px;
+  }
+
+  .profile-name {
+    font-size: 1.1rem;
+  }
+
+  .profile-page {
+    padding-top: 6rem;
+  }
 }

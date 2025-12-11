@@ -1,22 +1,28 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import api from '../api/client';
-import { useAuth } from '../context/AuthContext';
-import { toast } from 'react-toastify';
-import { FaHeart, FaShareAlt, FaEye, FaTrashAlt } from 'react-icons/fa';
-import './Video.css';
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, Link } from "react-router-dom";
+import api from "../api/client";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import { FaHeart, FaShareAlt, FaEye, FaTrashAlt } from "react-icons/fa";
+import "./Video.css";
 
 export default function Video() {
   const { id } = useParams();
+  const { user } = useAuth();
+
   const [video, setVideo] = useState(null);
   const [comments, setComments] = useState([]);
   const [related, setRelated] = useState([]);
-  const [text, setText] = useState('');
-  const { user } = useAuth();
-  const videoRef = useRef(null);
-  const watchTimeRef = useRef(0);
+  const [text, setText] = useState("");
 
-  /** Load video, comments & related */
+  // Refs for tracking watch time
+  const videoRef = useRef(null);
+  const totalWatchedRef = useRef(0);
+  const lastPlayTimeRef = useRef(null);
+  const lastSyncedRef = useRef(0);
+  const syncTimerRef = useRef(null);
+
+  /** Load video + comments + related videos */
   const load = async () => {
     try {
       const [v, c, all] = await Promise.all([
@@ -27,68 +33,110 @@ export default function Video() {
       setVideo(v.data);
       setComments(c.data);
       setRelated(all.data.filter((vid) => vid._id !== id).slice(0, 6));
-    } catch (err) {
-      toast.error('Failed to load video');
+    } catch {
+      toast.error("Failed to load video");
     }
   };
-
-  /** Register unique view */
-  const registerView = async () => {
-    try {
-      const viewedKey = `viewed_${id}_${user?.id || 'guest'}`;
-      if (!localStorage.getItem(viewedKey)) {
-        await api.post(`/videos/${id}/view`);
-        localStorage.setItem(viewedKey, 'true');
-      }
-    } catch (err) {
-      console.error('View count failed:', err);
-    }
-  };
-
-  /** Watch time tracking */
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handlePlay = () => {
-      registerView();
-    };
-
-    // Track every second watched
-    const trackInterval = setInterval(() => {
-      if (video && !video.paused && !video.ended) {
-        watchTimeRef.current += 1;
-      }
-    }, 1000);
-
-    const sendWatchTime = async () => {
-      if (watchTimeRef.current > 0) {
-        try {
-          await api.post(`/videos/${id}/watchtime`, {
-            secondsWatched: watchTimeRef.current,
-          });
-        } catch {
-          toast.error('Failed to record watch time');
-        }
-        watchTimeRef.current = 0;
-      }
-    };
-
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', sendWatchTime);
-    window.addEventListener('beforeunload', sendWatchTime);
-
-    return () => {
-      clearInterval(trackInterval);
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', sendWatchTime);
-      window.removeEventListener('beforeunload', sendWatchTime);
-    };
-  }, [id]);
 
   useEffect(() => {
     load();
+    // Reset tracking when switching videos
+    totalWatchedRef.current = 0;
+    lastPlayTimeRef.current = null;
+    lastSyncedRef.current = 0;
+    if (syncTimerRef.current) clearInterval(syncTimerRef.current);
   }, [id]);
+
+  /** Record view (one-time per user/guest) */
+  const registerView = async () => {
+    try {
+      const key = `viewed_${id}_${user?.id || "guest"}`;
+      if (!localStorage.getItem(key)) {
+        await api.post(`/videos/${id}/view`);
+        localStorage.setItem(key, "true");
+      }
+    } catch {}
+  };
+
+  /** Add to history (only for logged-in users) */
+  const addToHistory = async () => {
+    if (!user) return;
+    try {
+      await api.post(`/history/${id}`);
+    } catch {}
+  };
+
+  /** Send watch time to backend (with safety) */
+  const sendWatchTime = async (seconds) => {
+    if (seconds <= 0) return;
+    try {
+      await api.post(`/videos/${id}/watchtime`, { secondsWatched: seconds });
+    } catch (err) {
+      console.warn("Watch time sync failed:", err.message);
+    }
+  };
+
+  /** When video starts playing */
+  const handlePlay = () => {
+    registerView();
+    addToHistory();
+
+    // Start tracking
+    lastPlayTimeRef.current = Date.now();
+
+    // Create sync interval if not already running
+    if (!syncTimerRef.current) {
+      syncTimerRef.current = setInterval(() => {
+        const videoEl = videoRef.current;
+        if (!videoEl || videoEl.paused || videoEl.ended) return;
+
+        const now = Date.now();
+        const elapsed = Math.floor((now - lastPlayTimeRef.current) / 1000);
+        totalWatchedRef.current += elapsed;
+        lastPlayTimeRef.current = now;
+
+        const delta = totalWatchedRef.current - lastSyncedRef.current;
+        if (delta >= 10) {
+          sendWatchTime(delta);
+          lastSyncedRef.current = totalWatchedRef.current;
+        }
+      }, 5000);
+    }
+  };
+
+  /** On pause or video end */
+  const handlePauseOrEnd = async () => {
+    if (!lastPlayTimeRef.current) return;
+
+    const elapsed = Math.floor((Date.now() - lastPlayTimeRef.current) / 1000);
+    totalWatchedRef.current += elapsed;
+    lastPlayTimeRef.current = null;
+
+    const unsynced = totalWatchedRef.current - lastSyncedRef.current;
+    if (unsynced > 0) {
+      await sendWatchTime(unsynced);
+      lastSyncedRef.current = totalWatchedRef.current;
+    }
+  };
+
+  /** Before leaving page */
+  useEffect(() => {
+    const handleUnload = async () => {
+      await handlePauseOrEnd();
+    };
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
+  }, []);
+
+  /** Cleanup interval */
+  useEffect(() => {
+    return () => {
+      if (syncTimerRef.current) {
+        clearInterval(syncTimerRef.current);
+        syncTimerRef.current = null;
+      }
+    };
+  }, []);
 
   /** Like video */
   const like = async () => {
@@ -96,7 +144,7 @@ export default function Video() {
       await api.post(`/videos/${id}/like`);
       load();
     } catch {
-      toast.error('Failed to like video');
+      toast.error("Failed to like video");
     }
   };
 
@@ -108,10 +156,10 @@ export default function Video() {
         await navigator.share({ title: video.title, url: window.location.href });
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        toast.info('Video link copied');
+        toast.info("Video link copied");
       }
     } catch {
-      toast.error('Failed to share video');
+      toast.error("Failed to share video");
     }
   };
 
@@ -121,10 +169,10 @@ export default function Video() {
     if (!text.trim()) return;
     try {
       await api.post(`/comments/${id}`, { text });
-      setText('');
+      setText("");
       load();
     } catch {
-      toast.error('Failed to post comment');
+      toast.error("Failed to post comment");
     }
   };
 
@@ -133,18 +181,18 @@ export default function Video() {
     const c = comments.find((c) => c._id === cid);
     if (!c) return;
     if (!user || String(c.user?._id) !== String(user.id || user._id)) {
-      toast.warn('You can only delete your own comments');
+      toast.warn("You can only delete your own comments");
       return;
     }
     try {
       await api.delete(`/comments/item/${cid}`);
       load();
     } catch {
-      toast.error('Failed to delete comment');
+      toast.error("Failed to delete comment");
     }
   };
 
-  /** Time ago formatting */
+  /** Format timestamp */
   const timeAgo = (date) => {
     const diff = Math.floor((Date.now() - new Date(date)) / 1000);
     if (diff < 60) return `${diff}s ago`;
@@ -161,7 +209,7 @@ export default function Video() {
   return (
     <div className="video-page container-fluid py-4">
       <div className="row gx-5 gy-4">
-        {/* MAIN VIDEO SECTION */}
+        {/* MAIN VIDEO */}
         <div className="col-lg-8">
           <div className="video-player-container shadow-sm mb-3">
             <video
@@ -169,16 +217,18 @@ export default function Video() {
               className="video-player"
               src={video.url}
               controls
-              poster={video.thumbnail || ''}
+              poster={video.thumbnail || ""}
+              onPlay={handlePlay}
+              onPause={handlePauseOrEnd}
+              onEnded={handlePauseOrEnd}
             />
           </div>
 
           <h3 className="video-title mt-3">{video.title}</h3>
           <p className="text-secondary small mb-1">
-            Uploaded {video.createdAt ? timeAgo(video.createdAt) : ''}
+            Uploaded {video.createdAt ? timeAgo(video.createdAt) : ""}
           </p>
 
-          {/* Divider before description */}
           <hr className="video-divider" />
           <h6 className="text-light mb-2">Description</h6>
           <p className="text-secondary video-description">{video.description}</p>
@@ -186,7 +236,7 @@ export default function Video() {
           {/* Actions */}
           <div className="d-flex align-items-center gap-3 mt-3 video-actions">
             <button
-              className={`btn btn-like ${likedByUser ? 'liked' : ''}`}
+              className={`btn btn-like ${likedByUser ? "liked" : ""}`}
               onClick={like}
             >
               <FaHeart className="me-2" /> {video.likes?.length || 0}
@@ -201,7 +251,7 @@ export default function Video() {
             </div>
           </div>
 
-          {/* COMMENTS SECTION */}
+          {/* Comments */}
           <div className="comment-section mt-5 p-3 rounded shadow-sm">
             <h5 className="mb-3 text-light">Comments ({comments.length})</h5>
 
@@ -220,12 +270,16 @@ export default function Video() {
             <div className="comment-list">
               {comments.length > 0 ? (
                 comments.map((c) => (
-                  <div key={c._id} className="comment-item d-flex align-items-start">
+                  <div
+                    key={c._id}
+                    className="comment-item d-flex align-items-start"
+                  >
                     <img
                       src={
                         c.user?.avatar ||
-                        'https://ui-avatars.com/api/?name=' +
-                          encodeURIComponent(c.user?.name || 'User')
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          c.user?.name || "User"
+                        )}`
                       }
                       alt={c.user?.name}
                       className="comment-avatar me-3"
@@ -234,10 +288,10 @@ export default function Video() {
                       <div className="comment-header">
                         <div className="comment-info">
                           <small className="comment-author">
-                            {c.user?.name || 'Unknown User'}
+                            {c.user?.name || "Unknown User"}
                           </small>
                           <small className="comment-timestamp">
-                            {c.createdAt ? timeAgo(c.createdAt) : ''}
+                            {c.createdAt ? timeAgo(c.createdAt) : ""}
                           </small>
                         </div>
                         {user &&
@@ -277,12 +331,12 @@ export default function Video() {
                   className="related-item d-flex mb-3 text-decoration-none"
                 >
                   <div className="related-thumb me-3">
-                    <video src={rv.url} muted poster={rv.thumbnail || ''}></video>
+                    <video src={rv.url} muted poster={rv.thumbnail || ""}></video>
                   </div>
                   <div className="related-info">
                     <p className="related-title text-light mb-1">{rv.title}</p>
                     <small className="text-secondary">
-                      {rv.user?.name || 'Unknown'}
+                      {rv.user?.name || "Unknown"}
                     </small>
                   </div>
                 </Link>

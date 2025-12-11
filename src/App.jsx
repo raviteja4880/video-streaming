@@ -4,22 +4,23 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { ToastContainer } from 'react-toastify';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
+import { UploadProvider } from './context/UploadContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
-import GlobalLoader from './components/GlobalLoader';
+import UploadStatusBar from './components/UploadStatusBar';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Lazy-loaded pages
 const Feed = lazy(() => import('./pages/Feed'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Upload = lazy(() => import('./pages/Upload'));
 const Video = lazy(() => import('./pages/Video'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const History = lazy(() => import('./pages/History'));
 
-// 🎬 Page transition variants
+// Page transition variants
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   in: { opacity: 1, y: 0 },
@@ -32,31 +33,38 @@ const pageTransition = {
   duration: 0.5,
 };
 
-// 💡 Loader shown during lazy-load
+// Loader shown during lazy-load
 function FallbackLoader() {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-light">
-      <div className="spinner-border text-primary mb-3" style={{ width: '3rem', height: '3rem' }} role="status"></div>
+      <div
+        className="spinner-border text-primary mb-3"
+        style={{ width: '3rem', height: '3rem' }}
+        role="status"
+      ></div>
       <h5 className="mb-1">Loading Streamify...</h5>
       <small className="text-secondary">Please wait a moment 🎬</small>
     </div>
   );
 }
 
-// 💥 Error Boundary fallback UI
+// Error Boundary fallback UI
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-danger text-center">
       <h3>😢 Oops! Something went wrong</h3>
       <p className="text-secondary">{error.message}</p>
-      <button className="btn btn-outline-light mt-3" onClick={resetErrorBoundary}>
+      <button
+        className="btn btn-outline-light mt-3"
+        onClick={resetErrorBoundary}
+      >
         Try Again
       </button>
     </div>
   );
 }
 
-// 🔥 Animated Routes Wrapper
+// Animated Routes Wrapper
 function AnimatedRoutes() {
   const location = useLocation();
 
@@ -77,14 +85,41 @@ function AnimatedRoutes() {
             </motion.div>
           }
         />
+
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <motion.div
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={pageTransition}
+              >
+                <Dashboard />
+              </motion.div>
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <motion.div
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={pageTransition}
+              >
+                <History />
+              </motion.div>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/login"
           element={
@@ -99,6 +134,7 @@ function AnimatedRoutes() {
             </motion.div>
           }
         />
+
         <Route
           path="/register"
           element={
@@ -113,22 +149,7 @@ function AnimatedRoutes() {
             </motion.div>
           }
         />
-        <Route
-          path="/upload"
-          element={
-            <ProtectedRoute>
-              <motion.div
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-              >
-                <Upload />
-              </motion.div>
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/video/:id"
           element={
@@ -143,6 +164,7 @@ function AnimatedRoutes() {
             </motion.div>
           }
         />
+
         <Route
           path="/profile"
           element={
@@ -159,6 +181,7 @@ function AnimatedRoutes() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="*"
           element={
@@ -178,30 +201,37 @@ function AnimatedRoutes() {
   );
 }
 
-// 🧩 Main App Component
+// Main App Component
 export default function App() {
   return (
     <AuthProvider>
-        <div className="app-background text-light">
-        <Navbar />
+      <UploadProvider>
+        <div
+          className="app-background text-light"
+          style={{ backgroundColor: '#0d0d0d', minHeight: '100vh' }}
+        >
+          <Navbar />
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <Suspense fallback={<FallbackLoader />}>
+              <AnimatedRoutes />
+            </Suspense>
+          </ErrorBoundary>
 
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <Suspense fallback={<GlobalLoader />}>
-          <AnimatedRoutes />
-        </Suspense>
-        </ErrorBoundary>
+          {/* Floating Upload Status Bar (visible globally) */}
+          <UploadStatusBar />
 
-        {/* Global Toasts */}
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          pauseOnHover
-          theme="dark"
-        />
-      </div>
+          {/* Global Toast Notifications */}
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            theme="dark"
+          />
+        </div>
+      </UploadProvider>
     </AuthProvider>
   );
 }

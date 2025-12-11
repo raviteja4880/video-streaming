@@ -3,6 +3,7 @@ import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { FaCamera, FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import '../styles.css';
 
 export default function Profile() {
   const { user, setUser, logout } = useAuth();
@@ -73,11 +74,11 @@ export default function Profile() {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-      <div className="col-md-8 col-lg-6 bg-dark p-4 rounded shadow-sm position-relative" style={{ maxWidth: 600 }}>
-        {/* 🔴 Logout button (top-right) */}
+    <div className="profile-page">
+      <div className="profile-card shadow-lg">
+        {/* 🔴 Logout button */}
         <button
-          className="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-3 d-flex align-items-center gap-2"
+          className="logout-btn d-flex align-items-center gap-2"
           onClick={() => {
             logout();
             nav('/');
@@ -87,29 +88,17 @@ export default function Profile() {
           Logout
         </button>
 
-        {/* Avatar & basic info */}
-        <div className="text-center mb-4 position-relative mt-3">
-          <div className="position-relative d-inline-block">
+        {/* Avatar Section */}
+        <div className="profile-header text-center">
+          <div className="avatar-wrapper">
             <img
               src={preview || avatar || 'https://via.placeholder.com/150'}
               alt="avatar"
-              className="rounded-circle shadow-sm"
-              width="130"
-              height="130"
-              style={{
-                objectFit: 'cover',
-                border: '3px solid #ffffff',
-              }}
+              className="profile-avatar"
             />
             <label
               htmlFor="avatarUpload"
-              className="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center"
-              style={{
-                cursor: 'pointer',
-                fontSize: '1rem',
-                border: '2px solid white',
-                transform: 'translate(25%, 25%)',
-              }}
+              className="avatar-upload-btn"
               title="Change photo"
             >
               <FaCamera size={16} />
@@ -122,12 +111,12 @@ export default function Profile() {
               style={{ display: 'none' }}
             />
           </div>
-          <h4 className="mt-3 mb-0">{name}</h4>
-          <small className="text-secondary">{user?.email}</small>
+          <h4 className="profile-name">{name}</h4>
+          <small className="profile-email">{user?.email}</small>
         </div>
 
         {/* Profile Form */}
-        <form onSubmit={save}>
+        <form onSubmit={save} className="profile-form mt-4">
           <div className="mb-3">
             <label className="form-label">Name</label>
             <input

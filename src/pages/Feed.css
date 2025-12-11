@@ -1,41 +1,227 @@
-/* Feed page - full width layout */
+/* Feed Page Layout */
 .feed-page {
   width: 100%;
   min-height: 100vh;
-  background: none; /* transparent */
+  background: none;
   color: #f1f1f1;
-  padding: 2rem 0; /* no horizontal padding */
+  padding: 2rem 0;
   font-family: 'Inter', 'Poppins', sans-serif;
 }
 
-/* Center header text */
-.feed-header {
+/* ---------- Search Bar Container ---------- */
+.search-bar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 90px; /* space for fixed navbar */
   margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+/* ---------- Input Container ---------- */
+.search-input-container {
+  display: flex;
+  align-items: center;
+  background: #1a1a1a;
+  border-radius: 30px;
+  border: 1px solid #333;
+  width: 100%;
+  max-width: 600px;
+  padding: 0.4rem 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.search-input-container:focus-within {
+  border-color: #00bcd4;
+  box-shadow: 0 0 6px rgba(0, 188, 212, 0.5);
+}
+
+/* ---------- Input Field ---------- */
+.search-input-container input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  min-width: 0;
+}
+
+.search-input-container input::placeholder {
+  color: #aaa;
+}
+
+/* ---------- Icons ---------- */
+.search-icon {
+  color: #aaa;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+}
+
+.mic-btn {
+  background: #222;
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.mic-btn:hover {
+  background: #00bcd4;
+  transform: scale(1.1);
+}
+
+.mic-btn.active {
+  background: #dc3545;
+  animation: micPulse 1s infinite ease-in-out;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(220, 53, 69, 0); }
+}
+
+/* ---------- Voice Dropdown (Assistant Bubble) ---------- */
+.voice-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 15px;
+  padding: 2rem 1.5rem;
   text-align: center;
+  z-index: 1000;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 0 20px rgba(0, 188, 212, 0.2);
 }
 
-.feed-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #ffffff;
+.voice-wave {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #00bcd4 0%, #007bff 70%);
+  margin: 0 auto 1rem;
+  animation: pulseWave 1.5s infinite ease-in-out;
 }
 
-.feed-subtitle {
-  font-size: 0.95rem;
-  color: #a0a0a0;
+@keyframes pulseWave {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 0.7; }
 }
 
-/* ✅ Full-width responsive video grid */
+.voice-text {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.listening-text {
+  font-style: italic;
+  color: #00bcd4;
+}
+
+.hint-text {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+/* ---------- Responsive Design ---------- */
+@media (max-width: 768px) {
+  .search-bar {
+    margin-top: 75px;
+    margin-bottom: 1rem;
+  }
+
+  .search-input-container {
+    padding: 0.35rem 0.6rem;
+    max-width: 95%;
+  }
+
+  .search-input-container input {
+    font-size: 0.95rem;
+  }
+
+  .mic-btn {
+    padding: 0.35rem;
+    font-size: 0.9rem;
+  }
+
+  .search-icon {
+    font-size: 0.9rem;
+    margin-right: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-bar {
+    margin-top: 70px;
+  }
+
+  .search-input-container {
+    max-width: 100%;
+    border-radius: 25px;
+  }
+
+  .mic-btn {
+    padding: 0.3rem;
+  }
+}
+
+/* 🎥 Video Grid */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 videos per row */
+  grid-template-columns: repeat(5, 1fr);
   gap: 1.5rem;
   width: 100%;
-  padding: 0 2rem; /* small side padding */
+  padding: 0 2rem;
   box-sizing: border-box;
 }
 
-/* ✅ Make it responsive */
+/* ✨ Animations */
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px #00bcd4, 0 0 20px #007bff;
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 25px #00bcd4, 0 0 40px #007bff;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px #00bcd4, 0 0 20px #007bff;
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadePop {
+  0% {
+    transform: translate(-50%, -45%) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 📱 Responsive Grid */
 @media (max-width: 1600px) {
   .video-grid {
     grid-template-columns: repeat(4, 1fr);
@@ -53,6 +239,16 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     padding: 0 1rem;
+  }
+
+  .voice-panel {
+    width: 85%;
+    padding: 1.5rem;
+  }
+
+  .voice-wave {
+    width: 50px;
+    height: 50px;
   }
 }
 
