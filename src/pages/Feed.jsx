@@ -105,7 +105,7 @@ export default function Feed() {
               <span className="listening-text">Listening...</span>
             )}
           </p>
-          <p className="hint-text">Speak something like “search travel vlogs”</p>
+          <p className="hint-text">Speak something like “music”</p>
         </div>
       )}
 

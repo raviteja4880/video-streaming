@@ -16,7 +16,6 @@ import "./Video.css";
 export default function Video() {
   const { id } = useParams();
   const { user } = useAuth();
-
   const [video, setVideo] = useState(null);
   const [comments, setComments] = useState([]);
   const [related, setRelated] = useState([]);
@@ -24,13 +23,14 @@ export default function Video() {
   const [animationType, setAnimationType] = useState(null);
 
   const videoRef = useRef(null);
+  const containerRef = useRef(null);
   const totalWatchedRef = useRef(0);
   const lastPlayTimeRef = useRef(null);
   const lastSyncedRef = useRef(0);
   const syncTimerRef = useRef(null);
   let lastTap = 0;
 
-  // Load video data
+  /** Load video data */
   const load = async () => {
     try {
       const [v, c, all] = await Promise.all([
@@ -54,7 +54,7 @@ export default function Video() {
     if (syncTimerRef.current) clearInterval(syncTimerRef.current);
   }, [id]);
 
-  // Register one-time view
+  /** Register one-time view */
   const registerView = async () => {
     try {
       const key = `viewed_${id}_${user?.id || "guest"}`;
@@ -81,7 +81,7 @@ export default function Video() {
     }
   };
 
-  // Play tracking
+  /** Play tracking */
   const handlePlay = () => {
     registerView();
     addToHistory();
@@ -104,7 +104,7 @@ export default function Video() {
     }
   };
 
-  // Pause tracking
+  /** Pause tracking */
   const handlePauseOrEnd = async () => {
     if (!lastPlayTimeRef.current) return;
     const elapsed = Math.floor((Date.now() - lastPlayTimeRef.current) / 1000);
@@ -118,13 +118,13 @@ export default function Video() {
     triggerAnimation("pause");
   };
 
-  // Animations
+  /** Overlay animations */
   const triggerAnimation = (type) => {
     setAnimationType(type);
-    setTimeout(() => setAnimationType(null), 1000);
+    setTimeout(() => setAnimationType(null), 800);
   };
 
-  // Skip
+  /** Skip 10s */
   const skip = (sec) => {
     const videoEl = videoRef.current;
     if (!videoEl) return;
@@ -135,7 +135,7 @@ export default function Video() {
     triggerAnimation(sec > 0 ? "forward" : "backward");
   };
 
-  // Mobile double-tap
+  /** Mobile double tap skip */
   const handleTouch = (e) => {
     const now = new Date().getTime();
     const gap = now - lastTap;
@@ -148,7 +148,7 @@ export default function Video() {
     lastTap = now;
   };
 
-  // Add keyboard shortcuts
+  /** Keyboard shortcuts */
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (
@@ -156,6 +156,10 @@ export default function Video() {
         document.activeElement.tagName === "TEXTAREA"
       )
         return;
+
+      const vid = videoRef.current;
+      if (!vid) return;
+
       if (e.code === "ArrowRight") {
         e.preventDefault();
         skip(10);
@@ -164,10 +168,9 @@ export default function Video() {
         skip(-10);
       } else if (e.code === "Space") {
         e.preventDefault();
-        const vid = videoRef.current;
-        if (!vid) return;
-        if (vid.paused) vid.play();
-        else {
+        if (vid.paused) {
+          vid.play();
+        } else {
           vid.pause();
           triggerAnimation("pause");
         }
@@ -177,10 +180,10 @@ export default function Video() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Fullscreen detection (to fix overlay)
+  /** Fullscreen fix for overlay */
   useEffect(() => {
     const handleFullscreenChange = () => {
-      const container = videoRef.current?.parentElement;
+      const container = containerRef.current;
       if (document.fullscreenElement && container) {
         container.classList.add("fullscreen-active");
       } else {
@@ -216,7 +219,7 @@ export default function Video() {
     };
   }, []);
 
-  // Likes / Shares / Comments
+  /** Like/Share/Comments */
   const like = async () => {
     try {
       await api.post(`/videos/${id}/like`);
@@ -228,15 +231,15 @@ export default function Video() {
 
   const share = async () => {
     try {
-      await api.post(`/videos/${id}/share`);
       if (navigator.share) {
         await navigator.share({ title: video.title, url: window.location.href });
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        toast.info("Video link copied");
+        toast.info("Link copied to clipboard");
       }
+      await api.post(`/videos/${id}/share`);
     } catch {
-      toast.error("Failed to share video");
+      toast.error("Share failed");
     }
   };
 
@@ -282,9 +285,8 @@ export default function Video() {
   return (
     <div className="video-page container-fluid py-4">
       <div className="row gx-5 gy-4">
-        {/* Main video */}
         <div className="col-lg-8">
-          <div className="video-player-container shadow-sm mb-3 position-relative">
+          <div ref={containerRef} className="video-player-container position-relative shadow-sm">
             <video
               ref={videoRef}
               className="video-player"
@@ -301,10 +303,8 @@ export default function Video() {
                 else skip(10);
               }}
             />
-
-            {/* Overlay animations */}
             {animationType === "pause" && (
-              <div className="video-symbol pause">
+              <div className="video-symbol pause active">
                 <div className="pause-bars">
                   <div className="bar left"></div>
                   <div className="bar right"></div>
@@ -312,13 +312,13 @@ export default function Video() {
               </div>
             )}
             {animationType === "forward" && (
-              <div className="video-symbol forward">
+              <div className="video-symbol forward active">
                 <FaRedoAlt className="symbol-icon" />
                 <span className="symbol-text">10</span>
               </div>
             )}
             {animationType === "backward" && (
-              <div className="video-symbol backward">
+              <div className="video-symbol backward active">
                 <FaUndoAlt className="symbol-icon" />
                 <span className="symbol-text">10</span>
               </div>
@@ -334,7 +334,6 @@ export default function Video() {
           <h6 className="text-light mb-2">Description</h6>
           <p className="text-secondary video-description">{video.description}</p>
 
-          {/* Buttons */}
           <div className="d-flex align-items-center gap-3 mt-3 video-actions">
             <button
               className={`btn btn-like ${likedByUser ? "liked" : ""}`}

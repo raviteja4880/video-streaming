@@ -1,3 +1,6 @@
+/* ==============================
+   VIDEO PAGE BASE
+============================== */
 .video-page {
   color: #fff;
   padding-top: 6rem !important;
@@ -8,21 +11,40 @@
   background: #000;
   border-radius: 10px;
   overflow: hidden;
+  position: relative;
 }
 
 .video-player {
   width: 100%;
   border-radius: 10px;
+  display: block;
 }
 
-/* --- Fullscreen Overlay Fix --- */
-.fullscreen-active .video-symbol {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) scale(0.9) !important;
-  z-index: 9999 !important;
-  pointer-events: none !important;
+/* ==============================
+   ANIMATIONS OVERLAY
+============================== */
+.video-symbol {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.3s ease;
+}
+
+.video-symbol.active {
+  opacity: 1;
+  animation: fadeOut 1s ease forwards;
+}
+
+/* --- Fade-out animation for overlays --- */
+@keyframes fadeOut {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  25% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  75% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
 }
 
 /* --- YouTube-style pause bars --- */
@@ -61,21 +83,54 @@
   }
 }
 
-/* Adjust skip overlay positions */
-.video-symbol.forward {
-  right: 12%;
-}
-
+/* --- Skip Forward / Backward --- */
+.video-symbol.forward,
 .video-symbol.backward {
-  left: 12%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 2rem;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  animation: bounceFade 0.8s ease forwards;
 }
 
+.symbol-icon {
+  font-size: 2.5rem;
+}
+
+.symbol-text {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+/* Fade & bounce for skip overlay */
+@keyframes bounceFade {
+  0% { opacity: 0; transform: scale(0.8); }
+  20% { opacity: 1; transform: scale(1.1); }
+  60% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.8); }
+}
+
+/* --- Fullscreen Overlay Fix --- */
+.fullscreen-active .video-symbol {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(1) !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+}
+
+/* ==============================
+   VIDEO DETAILS
+============================== */
 .video-title {
   font-weight: 600;
   color: #fff;
 }
 
-/* Description Section */
 .video-divider {
   border: none;
   border-top: 1px solid #333;
@@ -88,24 +143,9 @@
   line-height: 1.5;
 }
 
-/* Like Button - Active State */
-.btn-like.liked {
-  background: #dc3545 !important;
-  color: #fff !important;
-  transform: scale(1.05);
-}
-
-.btn-like.liked:hover {
-  background: #b02a37 !important;
-  transform: scale(1.1);
-}
-
-/* Smooth transition */
-.btn-like {
-  transition: all 0.3s ease;
-}
-
-/* ACTION BUTTONS */
+/* ==============================
+   ACTION BUTTONS
+============================== */
 .video-actions .btn-like,
 .video-actions .btn-share {
   background: #222;
@@ -122,8 +162,10 @@
 }
 
 .btn-like.liked {
+  background: #dc3545 !important;
+  color: #fff !important;
+  transform: scale(1.1);
   animation: heartPulse 0.6s ease;
-  background: #dc3545;
 }
 
 @keyframes heartPulse {
@@ -133,9 +175,16 @@
   75% { transform: scale(1.15); }
 }
 
-/* COMMENTS */
+/* ==============================
+   COMMENTS SECTION
+============================== */
+.comment-section {
+  border-radius: 10px;
+  border: 1px solid #222;
+}
+
 input::placeholder,
-textarea::placeholder {
+textarea::placeholder {  
   color: #c9c9c9 !important;
   opacity: 1 !important;
   font-style: italic;
@@ -156,29 +205,14 @@ input.form-control.bg-dark:focus {
   background-color: #181818 !important;
 }
 
-.icon-delete-btn {
-  background: transparent;
-  border: none;
-  color: #ff5c5c;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: all 0.2s ease;
-}
-
-.icon-delete-btn:hover {
-  color: #ff7777;
-  transform: scale(1.15);
-}
-
-/* COMMENT SECTION */
 .comment-item {
-  background: #1a1d29;
+  background: #181b25;
   border-radius: 8px;
   padding: 8px 12px;
+  margin-bottom: 10px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin-bottom: 10px;
 }
 
 .comment-avatar {
@@ -189,7 +223,6 @@ input.form-control.bg-dark:focus {
   background: #2a2f3a;
 }
 
-/* Layout for comment header (name + time + delete) */
 .comment-header {
   display: flex;
   align-items: center;
@@ -197,7 +230,6 @@ input.form-control.bg-dark:focus {
   margin-bottom: 4px;
 }
 
-/* Left side (name + timestamp) */
 .comment-info {
   display: flex;
   align-items: center;
@@ -215,58 +247,52 @@ input.form-control.bg-dark:focus {
   color: #9ca3af;
 }
 
-/* Delete icon styling */
-.icon-delete-btn {
-  background: transparent;
-  border: none;
-  color: #ff5c5c;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: all 0.2s ease;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-delete-btn:hover {
-  color: #ff7777;
-  transform: scale(1.15);
-  opacity: 1;
-}
-
-.comment-item .icon-delete-btn {
-  opacity: 0;
-}
-
-.comment-item:hover .icon-delete-btn {
-  opacity: 1;
-}
-
 .comment-text {
   font-size: 14px;
   color: #d1d5db;
   margin: 0;
 }
 
+/* Delete button */
+.icon-delete-btn {
+  background: transparent;
+  border: none;
+  color: #ff5c5c;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
 
-/* RELATED VIDEOS */
+.comment-item:hover .icon-delete-btn {
+  opacity: 1;
+}
+
+.icon-delete-btn:hover {
+  color: #ff7777;
+  transform: scale(1.15);
+}
+
+/* ==============================
+   RELATED VIDEOS
+============================== */
 .related-section {
   background: #111;
   border: 1px solid #222;
   color: #fff;
   max-height: 80vh;
   overflow-y: auto;
+  border-radius: 10px;
 }
 
 .related-item {
   background: #181818;
   border-radius: 6px;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .related-item:hover {
-  transform: scale(1.02);
+  transform: scale(1.03);
+  background: #202020;
 }
 
 .related-thumb {
@@ -287,4 +313,16 @@ input.form-control.bg-dark:focus {
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.2;
+}
+
+/* Scrollbar styling */
+.related-section::-webkit-scrollbar {
+  width: 6px;
+}
+.related-section::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+.related-section::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

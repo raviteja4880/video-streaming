@@ -1,6 +1,6 @@
 import React, { memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FaPlayCircle, FaHeart } from 'react-icons/fa';
+import { FaPlayCircle, FaEye, FaClock } from 'react-icons/fa';
 import '../pages/videoCard.css';
 
 function VideoCard({ video }) {
@@ -24,6 +24,15 @@ function VideoCard({ video }) {
     video.user?.avatar ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(video.user?.name || 'User')}`;
 
+  const timeAgo = (date) => {
+    const diff = Math.floor((Date.now() - new Date(date)) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
+    return new Date(date).toLocaleDateString();
+  };
+
   return (
     <Link
       to={`/video/${video._id}`}
@@ -32,6 +41,7 @@ function VideoCard({ video }) {
       onMouseLeave={handleMouseLeave}
     >
       <div className="video-card">
+        {/* Thumbnail */}
         <div className="video-thumbnail">
           <video
             ref={videoRef}
@@ -43,30 +53,32 @@ function VideoCard({ video }) {
             className="video-preview"
           />
           <div className="video-overlay">
-            <FaPlayCircle size={48} className="play-icon" />
+            <FaPlayCircle size={50} className="play-icon" />
+            <span className="watch-now">Watch Now</span>
           </div>
         </div>
 
+        {/* Video Info */}
         <div className="video-info">
-          {/* User section */}
-          <div className="video-author d-flex align-items-center gap-2 mb-1">
-            <img
-              src={avatarUrl}
-              alt={video.user?.name || 'User'}
-              className="video-author-avatar"
-            />
-            <span className="video-author-name">
-              {video.user?.name || 'Unknown'}
-            </span>
-          </div>
+          <h6 className="video-title mb-2">{video.title}</h6>
 
-          {/* Video title & likes */}
-          <h6 className="video-title mb-1">{video.title}</h6>
-          <div className="video-meta d-flex align-items-center justify-content-between">
-            <span className="video-likes d-flex align-items-center gap-1">
-              <FaHeart className="text-danger" />
-              {video.likes?.length || 0}
-            </span>
+          <div className="video-meta">
+            <div className="video-meta-left">
+              <span className="meta-item">
+                <FaEye className="meta-icon" /> {video.views || 0} views
+              </span>
+              <span className="meta-separator">•</span>
+              <span className="meta-item">
+                <FaClock className="meta-icon" /> {timeAgo(video.createdAt)}
+              </span>
+            </div>
+
+            <div className="video-author d-flex align-items-center gap-1">
+              <img src={avatarUrl} alt="user" className="video-author-avatar" />
+              <span className="video-author-name">
+                {video.user?.name || 'Unknown'}
+              </span>
+            </div>
           </div>
         </div>
       </div>
