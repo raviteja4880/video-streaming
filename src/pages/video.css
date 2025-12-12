@@ -1,5 +1,7 @@
 .video-page {
   color: #fff;
+  padding-top: 6rem !important;
+  min-height: 100vh;
 }
 
 .video-player-container {
@@ -11,6 +13,61 @@
 .video-player {
   width: 100%;
   border-radius: 10px;
+}
+
+/* --- Fullscreen Overlay Fix --- */
+.fullscreen-active .video-symbol {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(0.9) !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+}
+
+/* --- YouTube-style pause bars --- */
+.pause-bars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pause-bars .bar {
+  width: 10px;
+  height: 40px;
+  background-color: white;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+  animation: pulsePause 0.8s ease forwards;
+}
+
+@keyframes pulsePause {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* Adjust skip overlay positions */
+.video-symbol.forward {
+  right: 12%;
+}
+
+.video-symbol.backward {
+  left: 12%;
 }
 
 .video-title {

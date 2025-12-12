@@ -37,7 +37,7 @@ export default function Navbar() {
               )}
             </ul>
 
-            {/* Right side */}
+            {/* ---------- Right side (User Section) ---------- */}
             <ul className="navbar-nav ms-auto align-items-center">
               {user ? (
                 <li className="nav-item">
@@ -46,14 +46,31 @@ export default function Navbar() {
                     to="/profile"
                     style={{ fontWeight: 500, color: '#f8f9fa' }}
                   >
-                    <div
-                      className="position-relative nav-avatar"
-                    >
-                      <img
-                        src={user.avatar || 'https://via.placeholder.com/40'}
-                        alt="avatar"
-                        onError={(e) => (e.target.src = 'https://via.placeholder.com/40')}
-                      />
+                    <div className="position-relative nav-avatar d-flex align-items-center justify-content-center">
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt="avatar"
+                          className="rounded-circle"
+                          onError={(e) => (e.target.src = '')}
+                          style={{
+                            width: 38,
+                            height: 38,
+                            objectFit: 'cover',
+                            border: '2px solid #0d6efd',
+                          }}
+                        />
+                      ) : (
+                        <FaUserCircle
+                          size={38}
+                          className="text-secondary"
+                          style={{
+                            background: '#222',
+                            borderRadius: '50%',
+                            padding: '4px',
+                          }}
+                        />
+                      )}
                     </div>
                     <span className="d-none d-sm-inline">{user.name}</span>
                   </Link>
@@ -89,7 +106,16 @@ export default function Navbar() {
             <span>History</span>
           </button>
           <button onClick={() => navigate('/profile')} className={location.pathname === '/profile' ? 'active' : ''}>
-            <FaUserCircle />
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="avatar"
+                className="rounded-circle"
+                style={{ width: 24, height: 24, objectFit: 'cover', border: '1px solid #0d6efd' }}
+              />
+            ) : (
+              <FaUserCircle />
+            )}
             <span>Profile</span>
           </button>
         </div>

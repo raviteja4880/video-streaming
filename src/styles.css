@@ -152,6 +152,17 @@ textarea::placeholder {
   align-items: center;
 }
 
+.nav-avatar img {
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.nav-avatar img:hover,
+.nav-avatar svg:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 6px #0d6efd);
+}
+
 /* ---------- Top Navbar Avatar ---------- */
 .nav-avatar {
   width: 40px;
@@ -277,6 +288,57 @@ textarea::placeholder {
 }
 
 /* ---------- Avatar Section ---------- */
+/* --- Floating Menu and Gear Toggle --- */
+.gear-toggle {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #00b3ff;
+  cursor: pointer;
+  transition: transform 0.4s ease, color 0.3s;
+  z-index: 20;
+}
+
+.gear-toggle.rotating {
+  transform: rotate(180deg);
+  color: #4dabff;
+}
+
+.floating-menu {
+  position: absolute;
+  top: 50px;
+  right: 15px;
+  background: rgba(20, 25, 35, 0.95);
+  border: 1px solid #0b6efd;
+  border-radius: 12px;
+  padding: 8px;
+  width: 190px;
+  box-shadow: 0 0 15px rgba(0, 150, 255, 0.4);
+  z-index: 15;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e2e8f0;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.menu-btn:hover {
+  background: #0b6efd;
+  color: #fff;
+  transform: translateX(3px);
+}
+
 .profile-header {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -358,6 +420,29 @@ textarea::placeholder {
   box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
 }
 
+.profile-card {
+  background: rgba(20, 20, 20, 0.9);
+  border-radius: 20px;
+  max-width: 480px;
+  margin: auto;
+  padding: 2rem;
+}
+.profile-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-secondary {
+  color: #aaa !important;
+}
+
 /* ---------- Responsive Design ---------- */
 @media (max-width: 768px) {
   .profile-card {
@@ -379,6 +464,37 @@ textarea::placeholder {
   }
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  min-width: 200px;
+  z-index: 999;
+  right: 1rem;
+}
+
+.dropdown-item-custom {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  color: #e5e5e5;
+  background: transparent;
+  border: none;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item-custom:hover {
+  background: #222;
+  color: #fff;
+}
+
+.dropdown-item-custom.text-danger:hover {
+  background: #b02a37;
+  color: #fff;
+}
+
 @media (max-width: 480px) {
   .profile-card {
     padding: 1rem;
@@ -396,4 +512,90 @@ textarea::placeholder {
   .profile-page {
     padding-top: 6rem;
   }
+}
+  /* Avatar remove button */
+.remove-avatar-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(220, 53, 69, 0.9);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.remove-avatar-btn:hover {
+  background: #b02a37;
+  transform: scale(1.1);
+}
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+.Toastify__toast-body button {
+  font-size: 13px;
+  padding: 4px 10px;
+}
+
+form label {
+  color: radial-gradient(circle at top left, #0d0d0d, #000);
+}
+
+form input.form-control {
+  background: radial-gradient(circle at top left, #0d0d0d, #000);
+  color: #fff !important;
+}
+
+form input.form-control:focus {
+  border-color: #0dcaf0 !important;
+  box-shadow: 0 0 6px rgba(13, 202, 240, 0.4);
+}
+
+.auth-page {
+  min-height: 100vh;
+  padding-top: 6rem;
+  background: radial-gradient(circle at top left, #0d0d0d, #000);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  background: #111;
+  border: 1px solid #222;
+  box-shadow: 0 0 25px rgba(0, 200, 255, 0.1);
+  animation: fadeIn 0.5s ease;
+}
+
+.auth-card input {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.auth-card input:focus {
+  border-color: #0dcaf0;
+  box-shadow: 0 0 8px rgba(13, 202, 240, 0.5);
+  outline: none;
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, #0dcaf0, #007bff);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #00b4d8, #0056b3);
+  transform: scale(1.02);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }

@@ -61,91 +61,93 @@ export default function RegisterVerify() {
   };
 
   return (
-    <div className="mx-auto p-4 bg-dark text-light rounded shadow" style={{ maxWidth: 480 }}>
-      {step === 'register' ? (
-        <form onSubmit={handleRegister}>
-          <h3 className="mb-3 text-center">Create Account</h3>
+    <div className="auth-page d-flex align-items-center justify-content-center">
+      <div className="auth-card p-4 rounded shadow">
+        {step === 'register' ? (
+          <form onSubmit={handleRegister}>
+            <h3 className="mb-4 text-center text-light">Create Account</h3>
 
-          <div className="mb-3">
-            <label className="form-label">Full Name</label>
-            <input
-              className="form-control bg-dark text-light border-secondary"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              placeholder="Enter your name"
-            />
-          </div>
+            <div className="mb-3">
+              <label className="form-label text-secondary">Full Name</label>
+              <input
+                className="form-control bg-dark text-light border-secondary"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="Enter your name"
+              />
+            </div>
 
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control bg-dark text-light border-secondary"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="Enter your email"
-            />
-          </div>
+            <div className="mb-3">
+              <label className="form-label text-secondary">Email</label>
+              <input
+                type="email"
+                className="form-control bg-dark text-light border-secondary"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Enter your email"
+              />
+            </div>
 
-          <div className="mb-4">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-control bg-dark text-light border-secondary"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Choose a strong password"
-            />
-          </div>
+            <div className="mb-4">
+              <label className="form-label text-secondary">Password</label>
+              <input
+                type="password"
+                className="form-control bg-dark text-light border-secondary"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Choose a strong password"
+              />
+            </div>
 
-          <button className="btn btn-primary w-100" disabled={busy}>
-            {busy ? 'Registering...' : 'Register'}
-          </button>
-        </form>
-      ) : (
-        <form onSubmit={handleVerify}>
-          <h3 className="mb-3 text-center">Verify Email</h3>
-
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control bg-dark text-light border-secondary"
-              value={email}
-              readOnly
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Enter OTP</label>
-            <input
-              type="text"
-              className="form-control bg-dark text-light border-secondary"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-              placeholder="Enter the 6-digit code"
-            />
-          </div>
-
-          <div className="d-flex gap-2">
-            <button type="submit" className="btn btn-primary flex-fill" disabled={busy}>
-              {busy ? 'Verifying...' : 'Verify OTP'}
+            <button className="btn btn-primary w-100" disabled={busy}>
+              {busy ? 'Registering...' : 'Register'}
             </button>
-            <button
-              type="button"
-              className="btn btn-outline-light flex-fill"
-              onClick={handleResend}
-              disabled={busy}
-            >
-              Resend OTP
-            </button>
-          </div>
-        </form>
-      )}
+          </form>
+        ) : (
+          <form onSubmit={handleVerify}>
+            <h3 className="mb-4 text-center text-light">Verify Email</h3>
+
+            <div className="mb-3">
+              <label className="form-label text-secondary">Email</label>
+              <input
+                type="email"
+                className="form-control bg-dark text-light border-secondary"
+                value={email}
+                readOnly
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label text-secondary">Enter OTP</label>
+              <input
+                type="text"
+                className="form-control bg-dark text-light border-secondary"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+                placeholder="Enter the 6-digit code"
+              />
+            </div>
+
+            <div className="d-flex gap-2">
+              <button type="submit" className="btn btn-primary flex-fill" disabled={busy}>
+                {busy ? 'Verifying...' : 'Verify OTP'}
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline-light flex-fill"
+                onClick={handleResend}
+                disabled={busy}
+              >
+                Resend OTP
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
