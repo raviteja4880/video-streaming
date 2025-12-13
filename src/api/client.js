@@ -1,7 +1,11 @@
 import axios from 'axios';
 
-baseURL = "https://video-streaming-backend-5g76.onrender.com/api" || VITE_API_BASE;
-
+// Automatically picks backend based on environment
+const baseURL =
+  import.meta.env.VITE_API_URL?.replace(/\/$/, '') ||
+  (window.location.hostname === 'localhost'
+    ? 'http://localhost:5000/api'
+    : 'https://video-streaming-backend-5g76.onrender.com/api'); 
 
 const api = axios.create({
   baseURL,
@@ -14,7 +18,7 @@ const api = axios.create({
 // Attach token automatically
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -23,11 +27,15 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Optional: global error handler
+// Global error handler (for logging)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.status, error.response?.data || error.message);
+    console.error(
+      'API Error:',
+      error.response?.status,
+      error.response?.data || error.message
+    );
     return Promise.reject(error);
   }
 );
