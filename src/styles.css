@@ -291,52 +291,66 @@ textarea::placeholder {
   font-weight: 600;
 }
 
-/* ---------- Bottom Navigation Bar (Mobile) ---------- */
+/* ---------- Bottom Navigation (Mobile) ---------- */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
-  right: 0;
-  background: #121212;
+  width: 100%;
+  background: #111; /* dark background */
   border-top: 1px solid #222;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 0.5rem 0;
-  z-index: 999;
-  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.4);
+  padding: 6px 0;
+  z-index: 1050; /* keep above other content */
 }
 
 .bottom-nav button {
   background: none;
   border: none;
   color: #aaa;
-  font-size: 1.3rem;
+  font-size: 0.8rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  font-weight: 500;
-  transition: color 0.2s ease, transform 0.2s ease;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+  transition: all 0.3s ease;
 }
 
-.bottom-nav button span {
-  font-size: 0.7rem;
+.bottom-nav button svg,
+.bottom-nav button img {
+  font-size: 1.4rem;
+  width: 22px;
+  height: 22px;
+}
+
+.bottom-nav {
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bottom-nav button.active {
-  color: #00bcd4;
+  color: #0d6efd; /* Bootstrap primary blue */
 }
 
 .bottom-nav button:hover {
-  color: #00bcd4;
-  transform: translateY(-2px);
+  color: #0d6efd;
 }
 
-/* Hide top navbar shadow on small screens for clarity */
-@media (max-width: 992px) {
-  .navbar {
-    padding-bottom: 3rem; /* space for bottom nav */
+/* ---------- Responsive Visibility ---------- */
+@media (min-width: 992px) {
+  .bottom-nav {
+    display: none !important; /* hidden on large devices */
+  }
+}
+
+@media (max-width: 991px) {
+  body {
+    padding-bottom: 60px; /* prevents overlap with fixed nav */
   }
 }
 
