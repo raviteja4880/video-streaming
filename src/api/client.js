@@ -1,11 +1,7 @@
 import axios from 'axios';
 
-// Automatically pick base URL depending on environment
-const baseURL =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, '') ||
-  (window.location.hostname === 'localhost'
-    ? 'http://localhost:5000/api'
-    : `${window.location.origin}/api`);
+baseURL = "https://video-streaming-backend-5g76.onrender.com/api" || VITE_API_BASE;
+
 
 const api = axios.create({
   baseURL,
