@@ -292,18 +292,20 @@ textarea::placeholder {
 }
 
 /* ---------- Bottom Navigation (Mobile) ---------- */
+/* ---------- FIX: Ensure mobile bottom-nav is visible ---------- */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
+  position: fixed !important;
+  bottom: 0 !important;
   left: 0;
-  width: 100%;
-  background: #111; /* dark background */
-  border-top: 1px solid #222;
+  right: 0;
+  height: 65px;
+  background: rgba(17, 17, 17, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 6px 0;
-  z-index: 1050; /* keep above other content */
+  z-index: 9999 !important; /* Always on top */
+  backdrop-filter: blur(8px);
 }
 
 .bottom-nav button {
@@ -342,15 +344,19 @@ textarea::placeholder {
 }
 
 /* ---------- Responsive Visibility ---------- */
-@media (min-width: 992px) {
-  .bottom-nav {
-    display: none !important; /* hidden on large devices */
+@media (max-width: 991px) {
+  body,
+  .feed-page,
+  .history-page,
+  .video-page,
+  .my-videos-page {
+    padding-bottom: 80px !important; /* leave space for nav */
   }
 }
 
-@media (max-width: 991px) {
-  body {
-    padding-bottom: 60px; /* prevents overlap with fixed nav */
+@media (min-width: 992px) {
+  .bottom-nav {
+    display: none !important;
   }
 }
 
