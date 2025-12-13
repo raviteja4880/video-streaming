@@ -1,7 +1,7 @@
 import React, { memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FaPlayCircle, FaEye, FaClock } from 'react-icons/fa';
-import '../pages/videoCard.css'; // You can keep this or move it globally if needed
+import '../pages/videoCard.css';
 
 function VideoCard({ video }) {
   const videoRef = useRef(null);
