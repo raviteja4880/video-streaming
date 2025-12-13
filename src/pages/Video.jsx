@@ -11,7 +11,7 @@ import {
   FaRedoAlt,
   FaUndoAlt,
 } from "react-icons/fa";
-import "./Video.css";
+import "../pages/video.css";
 
 export default function Video() {
   const { id } = useParams();

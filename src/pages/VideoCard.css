@@ -1,17 +1,17 @@
 /* ---------- Video Card Link ---------- */
-.video-card-link {
+.vcard-link {
   text-decoration: none;
   color: inherit;
   display: block;
   transition: transform 0.3s ease;
 }
 
-.video-card-link:hover {
+.vcard-link:hover {
   transform: translateY(-4px);
 }
 
 /* ---------- Video Card Container ---------- */
-.video-card {
+.vcard {
   background: #18181b;
   border-radius: 12px;
   overflow: hidden;
@@ -21,32 +21,32 @@
   transition: all 0.3s ease;
 }
 
-.video-card:hover {
+.vcard:hover {
   box-shadow: 0 0 18px rgba(0, 188, 212, 0.3);
   transform: translateY(-3px);
 }
 
 /* ---------- Thumbnail ---------- */
-.video-thumbnail {
+.vcard-thumbnail {
   position: relative;
   aspect-ratio: 16 / 9;
   background: #000;
   overflow: hidden;
 }
 
-.video-preview {
+.vcard-preview {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
 }
 
-.video-card:hover .video-preview {
+.vcard:hover .vcard-preview {
   transform: scale(1.07);
 }
 
 /* ---------- Overlay (Watch Now) ---------- */
-.video-overlay {
+.vcard-overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
@@ -56,24 +56,23 @@
   align-items: center;
   justify-content: center;
   transition: opacity 0.3s ease;
-  text-align: center;
 }
 
-.video-card:hover .video-overlay {
+.vcard:hover .vcard-overlay {
   opacity: 1;
 }
 
-.play-icon {
+.vcard-play-icon {
   color: #ffffff;
   margin-bottom: 8px;
   transition: transform 0.3s ease;
 }
 
-.video-card:hover .play-icon {
+.vcard:hover .vcard-play-icon {
   transform: scale(1.2);
 }
 
-.watch-now {
+.vcard-watch-now {
   color: #00bcd4;
   font-weight: 600;
   font-size: 0.95rem;
@@ -83,7 +82,7 @@
 }
 
 /* ---------- Info Section ---------- */
-.video-info {
+.vcard-info {
   padding: 0.9rem 1rem;
   display: flex;
   flex-direction: column;
@@ -91,7 +90,7 @@
 }
 
 /* ---------- Title ---------- */
-.video-title {
+.vcard-title {
   color: #fff;
   font-weight: 600;
   font-size: 1rem;
@@ -100,45 +99,29 @@
   transition: color 0.3s ease;
 }
 
-.video-card:hover .video-title {
+.vcard:hover .vcard-title {
   color: #4f9eff;
 }
 
 /* ---------- Meta Section ---------- */
-.video-meta {
+.vcard-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   color: #aaa;
   font-size: 0.85rem;
-  gap: 6px;
-}
-
-.video-meta-left {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   flex-wrap: wrap;
+  margin-top: 6px;
 }
 
-.meta-item {
+/* Left: Avatar + Name */
+.vcard-author {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
-.meta-icon {
-  font-size: 0.85rem;
-  color: #00bcd4;
-}
-
-.meta-separator {
-  color: #555;
-}
-
-/* ---------- Author ---------- */
-.video-author-avatar {
+.vcard-author-avatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -146,81 +129,73 @@
   background: #1f2937;
 }
 
-.video-author-name {
+.vcard-author-name {
   color: #e0e0e0;
   font-size: 0.85rem;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
-.video-card:hover .video-author-name {
+.vcard:hover .vcard-author-name {
   color: #00bcd4;
+}
+
+/* Right: Views + Time */
+.vcard-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.vcard-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vcard-meta-icon {
+  font-size: 0.85rem;
+  color: #00bcd4;
+}
+
+.vcard-meta-separator {
+  color: #555;
 }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
-  .video-title {
+  .vcard-title {
     font-size: 0.9rem;
   }
 
-  .video-meta {
+  .vcard-meta {
     font-size: 0.8rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 
-  .watch-now {
+  .vcard-meta-right {
+    justify-content: flex-start;
+  }
+
+  .vcard-watch-now {
     font-size: 0.8rem;
   }
 }
 
 @media (max-width: 480px) {
-  .video-card {
+  .vcard {
     border-radius: 8px;
   }
 
-  .video-info {
+  .vcard-info {
     padding: 0.7rem;
   }
 
-  .video-title {
-    font-size: 0.85rem;
-  }
-}
-
-/* ---------- Hover Effects ---------- */
-.video-card:hover .video-author-name {
-  color: #4f9eff;
-}
-
-.video-card:hover .video-title {
-  color: #ffffff;
-}
-
-/* ---------- Responsive Design ---------- */
-@media (max-width: 768px) {
-  .video-author-avatar {
-    width: 32px;
-    height: 32px;
-  }
-
-  .video-title {
-    font-size: 0.9rem;
-  }
-
-  .video-meta {
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .video-card {
-    border-radius: 8px;
-  }
-
-  .video-info {
-    padding: 0.7rem;
-  }
-
-  .video-title {
+  .vcard-title {
     font-size: 0.85rem;
   }
 }

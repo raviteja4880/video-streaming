@@ -1,7 +1,7 @@
 import React, { memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FaPlayCircle, FaEye, FaClock } from 'react-icons/fa';
-import '../pages/videoCard.css';
+import '../pages/videoCard.css'; // You can keep this or move it globally if needed
 
 function VideoCard({ video }) {
   const videoRef = useRef(null);
@@ -36,13 +36,13 @@ function VideoCard({ video }) {
   return (
     <Link
       to={`/video/${video._id}`}
-      className="video-card-link"
+      className="vcard-link"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="video-card">
+      <div className="vcard">
         {/* Thumbnail */}
-        <div className="video-thumbnail">
+        <div className="vcard-thumbnail">
           <video
             ref={videoRef}
             src={video.url}
@@ -50,33 +50,33 @@ function VideoCard({ video }) {
             playsInline
             preload="metadata"
             poster={video.thumbnail || ''}
-            className="video-preview"
+            className="vcard-preview"
           />
-          <div className="video-overlay">
-            <FaPlayCircle size={50} className="play-icon" />
-            <span className="watch-now">Watch Now</span>
+          <div className="vcard-overlay">
+            <FaPlayCircle size={50} className="vcard-play-icon" />
+            <span className="vcard-watch-now">Watch Now</span>
           </div>
         </div>
 
         {/* Video Info */}
-        <div className="video-info">
-          <h6 className="video-title mb-2">{video.title}</h6>
+        <div className="vcard-info">
+          <h6 className="vcard-title mb-2">{video.title}</h6>
 
-          <div className="video-meta">
-            <div className="video-meta-left">
-              <span className="meta-item">
-                <FaEye className="meta-icon" /> {video.views || 0} views
-              </span>
-              <span className="meta-separator">•</span>
-              <span className="meta-item">
-                <FaClock className="meta-icon" /> {timeAgo(video.createdAt)}
+          <div className="vcard-meta">
+            <div className="vcard-author">
+              <img src={avatarUrl} alt="user" className="vcard-author-avatar" />
+              <span className="vcard-author-name">
+                {video.user?.name || 'Unknown'}
               </span>
             </div>
 
-            <div className="video-author d-flex align-items-center gap-1">
-              <img src={avatarUrl} alt="user" className="video-author-avatar" />
-              <span className="video-author-name">
-                {video.user?.name || 'Unknown'}
+            <div className="vcard-meta-right">
+              <span className="vcard-meta-item">
+                <FaEye className="vcard-meta-icon" /> {video.views || 0} views
+              </span>
+              <span className="vcard-meta-separator">•</span>
+              <span className="vcard-meta-item">
+                <FaClock className="vcard-meta-icon" /> {timeAgo(video.createdAt)}
               </span>
             </div>
           </div>
