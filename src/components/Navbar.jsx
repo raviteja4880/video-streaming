@@ -1,12 +1,11 @@
 import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaHistory, FaHome, FaVideo, FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 import '../styles.css';
 
 export default function Navbar() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
 
   return (
@@ -14,17 +13,18 @@ export default function Navbar() {
       {/* ---------- Top Navbar ---------- */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2 fixed-top">
         <div className="container">
-          {/* Brand */}
+          {/* ---------- Brand ---------- */}
           <Link className="navbar-brand fw-bold text-primary" to="/">
             Streamify
           </Link>
 
-          {/* Links */}
+          {/* ---------- Links ---------- */}
           <div className="collapse navbar-collapse" id="navMain">
             <ul className="navbar-nav me-auto">
               <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
                 <Link className="nav-link" to="/">Home</Link>
               </li>
+
               {user && (
                 <>
                   <li className={`nav-item ${location.pathname === '/dashboard' ? 'active' : ''}`}>
@@ -37,7 +37,7 @@ export default function Navbar() {
               )}
             </ul>
 
-            {/* ---------- Right side (User Section) ---------- */}
+            {/* ---------- Right Side (User Section) ---------- */}
             <ul className="navbar-nav ms-auto align-items-center">
               {user ? (
                 <li className="nav-item">
@@ -89,37 +89,6 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-
-      {/* ---------- Bottom Nav (Mobile) ---------- */}
-      {user && (
-        <div className="bottom-nav d-lg-none">
-          <button onClick={() => navigate('/')} className={location.pathname === '/' ? 'active' : ''}>
-            <FaHome />
-            <span>Home</span>
-          </button>
-          <button onClick={() => navigate('/dashboard')} className={location.pathname === '/dashboard' ? 'active' : ''}>
-            <FaVideo />
-            <span>Dashboard</span>
-          </button>
-          <button onClick={() => navigate('/history')} className={location.pathname === '/history' ? 'active' : ''}>
-            <FaHistory />
-            <span>History</span>
-          </button>
-          <button onClick={() => navigate('/profile')} className={location.pathname === '/profile' ? 'active' : ''}>
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt="avatar"
-                className="rounded-circle"
-                style={{ width: 24, height: 24, objectFit: 'cover', border: '1px solid #0d6efd' }}
-              />
-            ) : (
-              <FaUserCircle />
-            )}
-            <span>Profile</span>
-          </button>
-        </div>
-      )}
     </>
   );
 }

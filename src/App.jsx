@@ -6,8 +6,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
 import { UploadProvider } from './context/UploadContext';
 import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
 import UploadStatusBar from './components/UploadStatusBar';
+import MobileBottomNav from './components/MobileBottomNav';
+import RequireLogin from './components/RequireLogin';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Lazy-loaded pages
@@ -20,7 +21,7 @@ const Register = lazy(() => import('./pages/Register'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const History = lazy(() => import('./pages/History'));
 
-// Page transition variants
+// Page transition animations
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   in: { opacity: 1, y: 0 },
@@ -33,7 +34,7 @@ const pageTransition = {
   duration: 0.5,
 };
 
-// Loader shown during lazy-load
+// Loader during lazy loading
 function FallbackLoader() {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-light">
@@ -43,12 +44,12 @@ function FallbackLoader() {
         role="status"
       ></div>
       <h5 className="mb-1">Loading Streamify...</h5>
-      <small className="text-secondary">Please wait a moment 🎬</small>
+      <small className="text-secondary">Please wait a moment</small>
     </div>
   );
 }
 
-// Error Boundary fallback UI
+// Error boundary fallback
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-danger text-center">
@@ -64,13 +65,14 @@ function ErrorFallback({ error, resetErrorBoundary }) {
   );
 }
 
-// Animated Routes Wrapper
+// Animated routes
 function AnimatedRoutes() {
   const location = useLocation();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        {/* ---------- Public Routes ---------- */}
         <Route
           path="/"
           element={
@@ -83,40 +85,6 @@ function AnimatedRoutes() {
             >
               <Feed />
             </motion.div>
-          }
-        />
-
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <motion.div
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-              >
-                <Dashboard />
-              </motion.div>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/history"
-          element={
-            <ProtectedRoute>
-              <motion.div
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-              >
-                <History />
-              </motion.div>
-            </ProtectedRoute>
           }
         />
 
@@ -165,10 +133,45 @@ function AnimatedRoutes() {
           }
         />
 
+        {/* ---------- Login Required Routes ---------- */}
+        <Route
+          path="/dashboard"
+          element={
+            <RequireLogin>
+              <motion.div
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={pageTransition}
+              >
+                <Dashboard />
+              </motion.div>
+            </RequireLogin>
+          }
+        />
+
+        <Route
+          path="/history"
+          element={
+            <RequireLogin>
+              <motion.div
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={pageTransition}
+              >
+                <History />
+              </motion.div>
+            </RequireLogin>
+          }
+        />
+
         <Route
           path="/profile"
           element={
-            <ProtectedRoute>
+            <RequireLogin>
               <motion.div
                 initial="initial"
                 animate="in"
@@ -178,10 +181,11 @@ function AnimatedRoutes() {
               >
                 <Profile />
               </motion.div>
-            </ProtectedRoute>
+            </RequireLogin>
           }
         />
 
+        {/* ---------- Not Found ---------- */}
         <Route
           path="*"
           element={
@@ -201,7 +205,7 @@ function AnimatedRoutes() {
   );
 }
 
-// Main App Component
+// ---------- MAIN APP ----------
 export default function App() {
   return (
     <AuthProvider>
@@ -210,17 +214,23 @@ export default function App() {
           className="app-background text-light"
           style={{ backgroundColor: '#0d0d0d', minHeight: '100vh' }}
         >
+          {/* Top Navbar */}
           <Navbar />
+
+          {/* Error & Loading Handlers */}
           <ErrorBoundary FallbackComponent={ErrorFallback}>
             <Suspense fallback={<FallbackLoader />}>
               <AnimatedRoutes />
             </Suspense>
           </ErrorBoundary>
 
-          {/* Floating Upload Status Bar (visible globally) */}
+          {/* Global Upload Status Bar */}
           <UploadStatusBar />
 
-          {/* Global Toast Notifications */}
+          {/* Mobile Bottom Navigation (always visible) */}
+          <MobileBottomNav />
+
+          {/* Toast Notifications */}
           <ToastContainer
             position="top-right"
             autoClose={3000}

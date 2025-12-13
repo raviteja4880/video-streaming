@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import api from "../api/client";
 import { toast } from "react-toastify";
 
@@ -16,7 +16,7 @@ export default function Login() {
   const nav = useNavigate();
   const loc = useLocation();
 
-  /** LOGIN **/
+  /** 🔹 LOGIN **/
   const handleLogin = async (e) => {
     e.preventDefault();
     setBusy(true);
@@ -31,7 +31,7 @@ export default function Login() {
     }
   };
 
-  /** REQUEST RESET OTP **/
+  /** 🔹 REQUEST RESET OTP **/
   const handleForgot = async (e) => {
     e.preventDefault();
     if (!email) return toast.warn("Enter your email first");
@@ -39,7 +39,7 @@ export default function Login() {
     try {
       const { data } = await api.post("/users/forgot-password", { email });
       toast.success(data.message || "OTP sent to your email");
-      setStep("verify"); // move to verify+reset step
+      setStep("verify");
     } catch (err) {
       toast.error(err.response?.data?.message || "Email not found");
     } finally {
@@ -47,7 +47,7 @@ export default function Login() {
     }
   };
 
-  /** VERIFY OTP & RESET PASSWORD **/
+  /** 🔹 VERIFY OTP & RESET PASSWORD **/
   const handleVerifyReset = async (e) => {
     e.preventDefault();
     setBusy(true);
@@ -58,8 +58,10 @@ export default function Login() {
         newPassword,
       });
       toast.success("Password reset successfully! Logging you in...");
-      // auto-login after reset
-      const res = await api.post("/users/login", { email, password: newPassword });
+      const res = await api.post("/users/login", {
+        email,
+        password: newPassword,
+      });
       login(res.data);
       nav("/", { replace: true });
     } catch (err) {
@@ -100,7 +102,8 @@ export default function Login() {
             <button className="btn btn-primary w-100" disabled={busy}>
               {busy ? "Loading..." : "Login"}
             </button>
-            <p className="text-center mt-3 mb-0">
+
+            <p className="text-center mt-3 mb-1">
               <button
                 type="button"
                 className="btn btn-link text-info p-0"
@@ -109,6 +112,19 @@ export default function Login() {
                 Forgot Password?
               </button>
             </p>
+
+            {/* 🔹 Register Link */}
+            <div className="text-center border-top mt-3 pt-3">
+              <small className="text-secondary">
+                Don’t have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-info text-decoration-none fw-semibold"
+                >
+                  Register
+                </Link>
+              </small>
+            </div>
           </form>
         )}
 
@@ -129,7 +145,7 @@ export default function Login() {
             <button className="btn btn-primary w-100" disabled={busy}>
               {busy ? "Sending..." : "Send OTP"}
             </button>
-            <p className="text-center mt-3 mb-0">
+            <p className="text-center mt-3 mb-1">
               <button
                 type="button"
                 className="btn btn-link text-info p-0"
@@ -138,6 +154,19 @@ export default function Login() {
                 Back to Login
               </button>
             </p>
+
+            {/* 🔹 Register Link for Forgot Page */}
+            <div className="text-center border-top mt-3 pt-3">
+              <small className="text-secondary">
+                Don’t have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-info text-decoration-none fw-semibold"
+                >
+                  Register
+                </Link>
+              </small>
+            </div>
           </form>
         )}
 
@@ -169,7 +198,7 @@ export default function Login() {
             <button className="btn btn-primary w-100" disabled={busy}>
               {busy ? "Verifying..." : "Confirm & Login"}
             </button>
-            <p className="text-center mt-3 mb-0">
+            <p className="text-center mt-3 mb-1">
               <button
                 type="button"
                 className="btn btn-link text-info p-0"
@@ -178,6 +207,19 @@ export default function Login() {
                 Back to Login
               </button>
             </p>
+
+            {/* 🔹 Register Link for Verify Page */}
+            <div className="text-center border-top mt-3 pt-3">
+              <small className="text-secondary">
+                Don’t have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-info text-decoration-none fw-semibold"
+                >
+                  Register
+                </Link>
+              </small>
+            </div>
           </form>
         )}
       </div>
