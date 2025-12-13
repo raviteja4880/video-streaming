@@ -9,7 +9,6 @@ import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import UploadStatusBar from './components/UploadStatusBar';
 import 'react-toastify/dist/ReactToastify.css';
-import'./pages/VideoCard.css';
 
 // Lazy-loaded pages
 const Feed = lazy(() => import('./pages/Feed'));
