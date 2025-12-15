@@ -5,7 +5,7 @@ import { FaHome, FaVideo, FaHistory, FaUserCircle } from "react-icons/fa";
 export default function MobileBottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const user = JSON.parse(localStorage.getItem("user")); 
 
   return (
     <div className="bottom-nav d-lg-none">
@@ -18,7 +18,7 @@ export default function MobileBottomNav() {
       </button>
 
       <button
-        onClick={() => (userInfo ? navigate("/dashboard") : navigate("/login"))}
+        onClick={() => (user ? navigate("/dashboard") : navigate("/login"))}
         className={location.pathname === "/dashboard" ? "active" : ""}
       >
         <FaVideo size={20} />
@@ -26,7 +26,7 @@ export default function MobileBottomNav() {
       </button>
 
       <button
-        onClick={() => (userInfo ? navigate("/history") : navigate("/login"))}
+        onClick={() => (user ? navigate("/history") : navigate("/login"))}
         className={location.pathname === "/history" ? "active" : ""}
       >
         <FaHistory size={20} />
@@ -34,11 +34,11 @@ export default function MobileBottomNav() {
       </button>
 
       <button
-        onClick={() => (userInfo ? navigate("/profile") : navigate("/login"))}
+        onClick={() => (user ? navigate("/profile") : navigate("/login"))}
         className={location.pathname === "/profile" ? "active" : ""}
       >
         <FaUserCircle size={20} />
-        <span>{userInfo ? "Profile" : "Login"}</span>
+        <span>{user ? "Profile" : "Login"}</span>
       </button>
     </div>
   );

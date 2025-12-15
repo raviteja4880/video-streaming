@@ -16,22 +16,34 @@ export default function Login() {
   const nav = useNavigate();
   const loc = useLocation();
 
-  /** 🔹 LOGIN **/
+  /** LOGIN **/
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const res = await api.post("/users/login", { email, password });
-      login(res.data);
-      nav(loc.state?.from?.pathname || "/", { replace: true });
-    } catch (e) {
-      toast.error(e.response?.data?.message || e.message);
-    } finally {
-      setBusy(false);
-    }
-  };
+  e.preventDefault();
+  setBusy(true);
+  try {
+    const res = await api.post("/users/login", { email, password });
 
-  /** 🔹 REQUEST RESET OTP **/
+    // Normalize keys for AuthContext
+    const userData = {
+      user: res.data.user || res.data.userInfo,     
+      token: res.data.token || res.data.jwtToken,   
+    };
+
+    if (!userData.user || !userData.token) {
+      throw new Error("Invalid login response — missing token or user");
+    }
+
+    login(userData);
+    toast.success("Welcome back!");
+    nav(loc.state?.from?.pathname || "/", { replace: true });
+  } catch (e) {
+    toast.error(e.response?.data?.message || e.message);
+  } finally {
+    setBusy(false);
+  }
+};
+
+  /** REQUEST RESET OTP **/
   const handleForgot = async (e) => {
     e.preventDefault();
     if (!email) return toast.warn("Enter your email first");
@@ -47,7 +59,7 @@ export default function Login() {
     }
   };
 
-  /** 🔹 VERIFY OTP & RESET PASSWORD **/
+  /** VERIFY OTP & RESET PASSWORD **/
   const handleVerifyReset = async (e) => {
     e.preventDefault();
     setBusy(true);
@@ -113,7 +125,7 @@ export default function Login() {
               </button>
             </p>
 
-            {/* 🔹 Register Link */}
+            {/* Register Link */}
             <div className="text-center border-top mt-3 pt-3">
               <small className="text-secondary">
                 Don’t have an account?{" "}
@@ -155,7 +167,7 @@ export default function Login() {
               </button>
             </p>
 
-            {/* 🔹 Register Link for Forgot Page */}
+            {/* Register Link for Forgot Page */}
             <div className="text-center border-top mt-3 pt-3">
               <small className="text-secondary">
                 Don’t have an account?{" "}
@@ -208,7 +220,7 @@ export default function Login() {
               </button>
             </p>
 
-            {/* 🔹 Register Link for Verify Page */}
+            {/* Register Link for Verify Page */}
             <div className="text-center border-top mt-3 pt-3">
               <small className="text-secondary">
                 Don’t have an account?{" "}
