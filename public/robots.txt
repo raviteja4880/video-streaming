@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Disallow private or sensitive routes (optional)
+Disallow: /login
+Disallow: /register
+Disallow: /dashboard
+
+# Sitemap location
+Sitemap: https://streamify-phi-taupe.vercel.app/sitemap.xml

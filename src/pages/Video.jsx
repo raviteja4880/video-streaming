@@ -283,6 +283,16 @@ export default function Video() {
   const likedByUser = user && video.likes?.includes(user.id || user._id);
 
   return (
+    <>
+      <Helmet>
+        <title>Home – Streamify</title>
+        <meta
+          name="description"
+          content="Watch trending and creative videos on Streamify. Join the community and share your talent!"
+        />
+        <link rel="canonical" href="https://streamify-phi-taupe.vercel.app/" />
+      </Helmet>
+
     <div className="video-page container-fluid py-4">
       <div className="row gx-5 gy-4">
         <div className="col-lg-8">
@@ -439,5 +449,6 @@ export default function Video() {
         </div>
       </div>
     </div>
+    </>
   );
 }

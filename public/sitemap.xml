@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://streamify-phi-taupe.vercel.app/</loc>
+    <lastmod>2025-12-15</lastmod>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Dashboard -->
+  <url>
+    <loc>https://streamify-phi-taupe.vercel.app/dashboard</loc>
+    <lastmod>2025-12-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- History -->
+  <url>
+    <loc>https://streamify-phi-taupe.vercel.app/history</loc>
+    <lastmod>2025-12-15</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Login -->
+  <url>
+    <loc>https://streamify-phi-taupe.vercel.app/login</loc>
+    <lastmod>2025-12-15</lastmod>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Register -->
+  <url>
+    <loc>https://streamify-phi-taupe.vercel.app/register</loc>
+    <lastmod>2025-12-15</lastmod>
+    <priority>0.5</priority>
+  </url>
+
+</urlset>
