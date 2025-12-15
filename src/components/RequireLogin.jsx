@@ -17,24 +17,19 @@ export default function RequireLogin({ children }) {
     return "this page";
   };
 
-  const pageName = getPageName();
-
-  // 🔹 While auth is initializing
+  // Wait for auth to initialize (critical for production)
   if (loading) {
     return (
-      <div className="d-flex flex-column justify-content-center align-items-center vh-100 text-light bg-dark">
-        <div
-          className="spinner-border text-info mb-3"
-          style={{ width: "2.5rem", height: "2.5rem" }}
-          role="status"
-        ></div>
+      <div className="vh-100 d-flex flex-column justify-content-center align-items-center text-light bg-dark">
+        <div className="spinner-border text-info mb-3" role="status" />
         <h6 className="fw-semibold text-info">Checking authentication...</h6>
       </div>
     );
   }
 
-  // 🔹 Not logged in — show login prompt
+  // Not logged in -> show custom message
   if (!user) {
+    console.log("⚠️ No user detected — showing login prompt.");
     return (
       <div
         className="d-flex flex-column justify-content-center align-items-center text-center text-light"
@@ -44,7 +39,6 @@ export default function RequireLogin({ children }) {
           padding: "2rem 1rem",
         }}
       >
-        {/* Lock Icon */}
         <div
           className="d-flex align-items-center justify-content-center mb-3"
           style={{
@@ -73,17 +67,17 @@ export default function RequireLogin({ children }) {
         >
           You need to{" "}
           <span style={{ color: "#00bcd4", fontWeight: "600" }}>log in</span> to
-          access your <strong>{pageName}</strong>.  
+          access your <strong>{getPageName()}</strong>.  
           Don’t worry, it only takes a few seconds!
         </p>
 
-        {/* Login Button */}
         <button
           className="btn fw-semibold d-flex align-items-center justify-content-center gap-2"
-          onClick={() => navigate("/login")}
+          onClick={() =>
+            navigate("/login", { state: { from: location.pathname } })
+          }
           style={{
-            background:
-              "linear-gradient(135deg, #007bff 0%, #00bcd4 100%)",
+            background: "linear-gradient(135deg, #007bff 0%, #00bcd4 100%)",
             border: "none",
             color: "#fff",
             padding: "0.65rem 1.8rem",
@@ -92,16 +86,6 @@ export default function RequireLogin({ children }) {
             fontSize: "1rem",
             transition: "all 0.3s ease",
           }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.transform = "scale(1.05)";
-            e.currentTarget.style.boxShadow =
-              "0 0 14px rgba(0, 188, 212, 0.6)";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.boxShadow =
-              "0 0 10px rgba(0, 188, 212, 0.3)";
-          }}
         >
           Go to Login <FaArrowRight />
         </button>
@@ -109,6 +93,5 @@ export default function RequireLogin({ children }) {
     );
   }
 
-  // 🔹 Logged in — render page
   return children;
 }

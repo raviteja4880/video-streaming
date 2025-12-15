@@ -1,27 +1,27 @@
-import React, { lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { ErrorBoundary } from 'react-error-boundary';
-import { ToastContainer } from 'react-toastify';
-import { AnimatePresence, motion } from 'framer-motion';
-import { AuthProvider } from './context/AuthContext';
-import { UploadProvider } from './context/UploadContext';
-import Navbar from './components/Navbar';
-import UploadStatusBar from './components/UploadStatusBar';
-import MobileBottomNav from './components/MobileBottomNav';
-import RequireLogin from './components/RequireLogin';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { lazy, Suspense } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
+import { ToastContainer } from "react-toastify";
+import { AnimatePresence, motion } from "framer-motion";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { UploadProvider } from "./context/UploadContext";
+import Navbar from "./components/Navbar";
+import UploadStatusBar from "./components/UploadStatusBar";
+import MobileBottomNav from "./components/MobileBottomNav";
+import RequireLogin from "./components/RequireLogin";
+import "react-toastify/dist/ReactToastify.css";
 
-// Lazy-loaded pages
-const Feed = lazy(() => import('./pages/Feed'));
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Video = lazy(() => import('./pages/Video'));
-const Profile = lazy(() => import('./pages/Profile'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-const History = lazy(() => import('./pages/History'));
+// ---------- Lazy-loaded Pages ----------
+const Feed = lazy(() => import("./pages/Feed"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Video = lazy(() => import("./pages/Video"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const History = lazy(() => import("./pages/History"));
 
-// Page transition animations
+// ---------- Page Transitions ----------
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   in: { opacity: 1, y: 0 },
@@ -29,43 +29,56 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  type: 'tween',
-  ease: 'anticipate',
+  type: "tween",
+  ease: "anticipate",
   duration: 0.5,
 };
 
-// Loader during lazy loading
+// ---------- Global Loader ----------
 function FallbackLoader() {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-light">
       <div
         className="spinner-border text-primary mb-3"
-        style={{ width: '3rem', height: '3rem' }}
+        style={{ width: "3rem", height: "3rem" }}
         role="status"
-      ></div>
+      />
       <h5 className="mb-1">Loading Streamify...</h5>
       <small className="text-secondary">Please wait a moment</small>
     </div>
   );
 }
 
-// Error boundary fallback
+// ---------- Error Boundary ----------
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-danger text-center">
       <h3>😢 Oops! Something went wrong</h3>
       <p className="text-secondary">{error.message}</p>
-      <button
-        className="btn btn-outline-light mt-3"
-        onClick={resetErrorBoundary}
-      >
+      <button className="btn btn-outline-light mt-3" onClick={resetErrorBoundary}>
         Try Again
       </button>
     </div>
   );
 }
 
-// Animated routes
+// ---------- Auth Gate (Prevents race conditions in production) ----------
+function AuthGate({ children }) {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-light">
+        <div className="spinner-border text-info mb-3" role="status" />
+        <h6>Checking authentication...</h6>
+      </div>
+    );
+  }
+
+  return children;
+}
+
+// ---------- Animated Routes ----------
 function AnimatedRoutes() {
   const location = useLocation();
 
@@ -133,7 +146,7 @@ function AnimatedRoutes() {
           }
         />
 
-        {/* ---------- Login Required Routes ---------- */}
+        {/* ---------- Protected Routes ---------- */}
         <Route
           path="/dashboard"
           element={
@@ -185,7 +198,7 @@ function AnimatedRoutes() {
           }
         />
 
-        {/* ---------- Not Found ---------- */}
+        {/* ---------- 404 Fallback ---------- */}
         <Route
           path="*"
           element={
@@ -212,22 +225,24 @@ export default function App() {
       <UploadProvider>
         <div
           className="app-background text-light"
-          style={{ backgroundColor: '#0d0d0d', minHeight: '100vh' }}
+          style={{ backgroundColor: "#0d0d0d", minHeight: "100vh" }}
         >
-          {/* Top Navbar */}
+          {/* Navbar */}
           <Navbar />
 
-          {/* Error & Loading Handlers */}
+          {/* Error Handling + Suspense + AuthGate */}
           <ErrorBoundary FallbackComponent={ErrorFallback}>
             <Suspense fallback={<FallbackLoader />}>
-              <AnimatedRoutes />
+              <AuthGate>
+                <AnimatedRoutes />
+              </AuthGate>
             </Suspense>
           </ErrorBoundary>
 
-          {/* Global Upload Status Bar */}
+          {/* Upload Status Bar */}
           <UploadStatusBar />
 
-          {/* Mobile Bottom Navigation (always visible) */}
+          {/* Mobile Navigation */}
           <MobileBottomNav />
 
           {/* Toast Notifications */}
