@@ -29,7 +29,6 @@ export default function RequireLogin({ children }) {
 
   // Not logged in -> show custom message
   if (!user) {
-    console.log("⚠️ No user detected — showing login prompt.");
     return (
       <div
         className="d-flex flex-column justify-content-center align-items-center text-center text-light"

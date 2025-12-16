@@ -1,20 +1,64 @@
-import React, { memo } from 'react'
+import React, { memo } from "react";
+import { FaTrashAlt } from "react-icons/fa";
 
-function CommentList({ comments, onDelete, meId }) {
-  return (
-    <div className="list-group">
-      {comments.map(c => (
-        <div key={c._id} className="list-group-item bg-transparent text-light d-flex justify-content-between align-items-start">
-          <div>
-            <strong>{c.user?.name || 'User'}</strong>
-            <div className="small text-secondary">{c.text}</div>
-          </div>
-          {meId === c.user?._id && (
-            <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(c._id)}>Delete</button>
-          )}
-        </div>
-      ))}
-    </div>
-  )
+function timeAgo(date) {
+  const diff = Math.floor((Date.now() - new Date(date)) / 1000);
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
+  return new Date(date).toLocaleDateString();
 }
-export default memo(CommentList)
+
+function CommentList({ comments = [], onDelete, meId }) {
+  return (
+    <div className="comment-list">
+      {comments.map((c) => {
+        const avatar =
+          c.user?.avatar ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            c.user?.name || "User"
+          )}`;
+
+        return (
+          <div key={c._id} className="comment-item">
+            {/* Avatar */}
+            <img
+              src={avatar}
+              alt={c.user?.name}
+              className="comment-avatar"
+            />
+
+            {/* Body */}
+            <div className="comment-body flex-grow-1">
+              <div className="comment-header">
+                <div className="comment-info">
+                  <span className="comment-author">
+                    {c.user?.name || "Unknown"}
+                  </span>
+                  <span className="comment-timestamp">
+                    {c.createdAt ? timeAgo(c.createdAt) : ""}
+                  </span>
+                </div>
+
+                {meId === c.user?._id && (
+                  <button
+                    className="icon-delete-btn"
+                    onClick={() => onDelete(c._id)}
+                    title="Delete comment"
+                  >
+                    <FaTrashAlt size={13} />
+                  </button>
+                )}
+              </div>
+
+              <p className="comment-text">{c.text}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default memo(CommentList);

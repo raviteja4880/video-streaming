@@ -1,0 +1,53 @@
+.video-skeleton {
+  width: 260px;
+  flex-shrink: 0;
+}
+
+.skeleton-thumb {
+  width: 100%;
+  height: 150px;
+  border-radius: 12px;
+  background: #2a2a2a;
+}
+
+.skeleton-info {
+  padding: 0.6rem 0;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 100%;
+  border-radius: 6px;
+  background: #2a2a2a;
+  margin-bottom: 8px;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+/* ---------- Shimmer Animation ---------- */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

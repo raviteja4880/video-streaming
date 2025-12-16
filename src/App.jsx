@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { UploadProvider } from "./context/UploadContext";
 import Navbar from "./components/Navbar";
+import VideoSkeleton from "./components/VideoSkeleton";
 import UploadStatusBar from "./components/UploadStatusBar";
 import MobileBottomNav from "./components/MobileBottomNav";
 import RequireLogin from "./components/RequireLogin";
@@ -55,7 +56,10 @@ function ErrorFallback({ error, resetErrorBoundary }) {
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-danger text-center">
       <h3>😢 Oops! Something went wrong</h3>
       <p className="text-secondary">{error.message}</p>
-      <button className="btn btn-outline-light mt-3" onClick={resetErrorBoundary}>
+      <button
+        className="btn btn-outline-light mt-3"
+        onClick={resetErrorBoundary}
+      >
         Try Again
       </button>
     </div>
@@ -68,9 +72,9 @@ function AuthGate({ children }) {
 
   if (loading) {
     return (
-      <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-light">
+      <div className="vh-100 d-flex flex-column justify-content-center align-items-center text-light bg-dark">
         <div className="spinner-border text-info mb-3" role="status" />
-        <h6>Checking authentication...</h6>
+        <h6 className="fw-semibold text-info">Initializing session...</h6>
       </div>
     );
   }
@@ -222,41 +226,42 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <UploadProvider>
-        <div
-          className="app-background text-light"
-          style={{ backgroundColor: "#0d0d0d", minHeight: "100vh" }}
-        >
-          {/* Navbar */}
-          <Navbar />
+      {/* ✅ Wrap the entire app in AuthGate */}
+      <AuthGate>
+        <UploadProvider>
+          <div
+            className="app-background text-light"
+            style={{ backgroundColor: "#0d0d0d", minHeight: "100vh" }}
+          >
+            {/* Navbar */}
+            <Navbar />
 
-          {/* Error Handling + Suspense + AuthGate */}
-          <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <Suspense fallback={<FallbackLoader />}>
-              <AuthGate>
+            {/* Error Handling + Suspense */}
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Suspense fallback={<FallbackLoader />}>
                 <AnimatedRoutes />
-              </AuthGate>
-            </Suspense>
-          </ErrorBoundary>
+              </Suspense>
+            </ErrorBoundary>
 
-          {/* Upload Status Bar */}
-          <UploadStatusBar />
+            {/* Upload Status Bar */}
+            <UploadStatusBar />
 
-          {/* Mobile Navigation */}
-          <MobileBottomNav />
+            {/* Mobile Navigation */}
+            <MobileBottomNav />
 
-          {/* Toast Notifications */}
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            pauseOnHover
-            theme="dark"
-          />
-        </div>
-      </UploadProvider>
+            {/* Toast Notifications */}
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              pauseOnHover
+              theme="dark"
+            />
+          </div>
+        </UploadProvider>
+      </AuthGate>
     </AuthProvider>
   );
 }

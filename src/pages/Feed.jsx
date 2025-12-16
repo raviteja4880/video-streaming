@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../api/client';
 import VideoCard from '../components/VideoCard';
+import VideoSkeleton from "../components/VideoSkeleton";
 import '../pages/Feed.css';
 import { FaMicrophone, FaMicrophoneSlash, FaSearch } from 'react-icons/fa';
 import Fuse from 'fuse.js';
 
 export default function Feed() {
   const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [listening, setListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
@@ -16,9 +18,20 @@ export default function Feed() {
 
   const scrollRef = useRef(null);
 
-  // Fetch videos
+  // ---------- Fetch videos ----------
   useEffect(() => {
-    api.get('/videos').then(({ data }) => setVideos(data));
+    const loadVideos = async () => {
+      try {
+        const { data } = await api.get('/videos');
+        setVideos(data);
+      } catch (err) {
+        console.error('Failed to load videos', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadVideos();
 
     // Voice recognition setup
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -52,7 +65,7 @@ export default function Feed() {
     }
   }, []);
 
-  // Start / Stop mic
+  // ---------- Mic handler ----------
   const handleVoiceSearch = () => {
     if (!recognition) {
       alert('Voice recognition not supported in this browser.');
@@ -70,7 +83,7 @@ export default function Feed() {
     }
   };
 
-  // Search logic
+  // ---------- Search ----------
   const fuse = new Fuse(videos, {
     keys: ['title', 'description'],
     threshold: 0.4,
@@ -81,12 +94,11 @@ export default function Feed() {
       ? videos
       : fuse.search(searchQuery).map((r) => r.item);
 
-  // Limit videos to 15 (unless showAll = true)
   const visibleVideos = showAll
     ? filteredVideos
     : filteredVideos.slice(0, 15);
 
-  // Horizontal scroll buttons
+  // ---------- Horizontal scroll ----------
   const scrollBy = (direction) => {
     if (scrollRef.current) {
       const scrollAmount = direction === 'left' ? -400 : 400;
@@ -120,20 +132,29 @@ export default function Feed() {
         <div className="voice-panel">
           <div className="voice-wave"></div>
           <p className="voice-text">
-            {liveTranscript ? (
-              <span>{liveTranscript}</span>
-            ) : (
-              <span className="listening-text">Listening...</span>
-            )}
+            {liveTranscript || <span className="listening-text">Listening...</span>}
           </p>
           <p className="hint-text">Speak something like “music”</p>
         </div>
       )}
 
       {/* ---------- Video Scroll Section ---------- */}
-      {visibleVideos.length > 0 ? (
+      {loading ? (
+        <div className="video-scroll-wrapper">
+          <div className="video-scroll-row">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <VideoSkeleton key={i} />
+            ))}
+          </div>
+
+          <p className="text-secondary text-center mt-4 fw-semibold">
+            Please wait, we’re getting things ready for you…
+          </p>
+        </div>
+      ) : visibleVideos.length > 0 ? (
         <>
           <div className="video-scroll-wrapper">
+            {/* Scroll buttons hidden while loading */}
             {visibleVideos.length > 4 && (
               <>
                 <button
@@ -160,7 +181,6 @@ export default function Feed() {
             </div>
           </div>
 
-          {/* ---------- View All Button ---------- */}
           {filteredVideos.length > 15 && !showAll && (
             <div className="text-center mt-3">
               <button

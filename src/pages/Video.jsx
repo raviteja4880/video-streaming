@@ -7,20 +7,26 @@ import {
   FaHeart,
   FaShareAlt,
   FaEye,
-  FaTrashAlt,
   FaRedoAlt,
   FaUndoAlt,
+  FaTrashAlt,
 } from "react-icons/fa";
 import "../pages/video.css";
+import { Helmet } from "react-helmet-async";
+import VideoCard from "../components/VideoCard";
+import CommentList from "../components/CommentList";
 
 export default function Video() {
   const { id } = useParams();
   const { user } = useAuth();
+
   const [video, setVideo] = useState(null);
   const [comments, setComments] = useState([]);
   const [related, setRelated] = useState([]);
+  const [allVideos, setAllVideos] = useState([]);
   const [text, setText] = useState("");
   const [animationType, setAnimationType] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -30,7 +36,15 @@ export default function Video() {
   const syncTimerRef = useRef(null);
   let lastTap = 0;
 
-  /** Load video data */
+  /* ---------- Mobile Detection ---------- */
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 992);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  /* ---------- Load Data ---------- */
   const load = async () => {
     try {
       const [v, c, all] = await Promise.all([
@@ -38,9 +52,13 @@ export default function Video() {
         api.get(`/comments/${id}`),
         api.get(`/videos`),
       ]);
+
       setVideo(v.data);
       setComments(c.data);
-      setRelated(all.data.filter((vid) => vid._id !== id).slice(0, 6));
+
+      const others = all.data.filter((vid) => vid._id !== id);
+      setAllVideos(others);
+      setRelated(others.slice(0, 6));
     } catch {
       toast.error("Failed to load video");
     }
@@ -54,7 +72,7 @@ export default function Video() {
     if (syncTimerRef.current) clearInterval(syncTimerRef.current);
   }, [id]);
 
-  /** Register one-time view */
+  /* ---------- Watch Tracking ---------- */
   const registerView = async () => {
     try {
       const key = `viewed_${id}_${user?.id || "guest"}`;
@@ -75,13 +93,12 @@ export default function Video() {
   const sendWatchTime = async (seconds) => {
     if (seconds <= 0) return;
     try {
-      await api.post(`/videos/${id}/watchtime`, { secondsWatched: seconds });
-    } catch (err) {
-      console.warn("Watch time sync failed:", err.message);
-    }
+      await api.post(`/videos/${id}/watchtime`, {
+        secondsWatched: seconds,
+      });
+    } catch {}
   };
 
-  /** Play tracking */
   const handlePlay = () => {
     registerView();
     addToHistory();
@@ -89,13 +106,16 @@ export default function Video() {
 
     if (!syncTimerRef.current) {
       syncTimerRef.current = setInterval(() => {
-        const videoEl = videoRef.current;
-        if (!videoEl || videoEl.paused || videoEl.ended) return;
+        const vid = videoRef.current;
+        if (!vid || vid.paused || vid.ended) return;
+
         const now = Date.now();
         const elapsed = Math.floor((now - lastPlayTimeRef.current) / 1000);
         totalWatchedRef.current += elapsed;
         lastPlayTimeRef.current = now;
-        const delta = totalWatchedRef.current - lastSyncedRef.current;
+
+        const delta =
+          totalWatchedRef.current - lastSyncedRef.current;
         if (delta >= 10) {
           sendWatchTime(delta);
           lastSyncedRef.current = totalWatchedRef.current;
@@ -104,13 +124,16 @@ export default function Video() {
     }
   };
 
-  /** Pause tracking */
   const handlePauseOrEnd = async () => {
     if (!lastPlayTimeRef.current) return;
-    const elapsed = Math.floor((Date.now() - lastPlayTimeRef.current) / 1000);
+    const elapsed = Math.floor(
+      (Date.now() - lastPlayTimeRef.current) / 1000
+    );
     totalWatchedRef.current += elapsed;
     lastPlayTimeRef.current = null;
-    const unsynced = totalWatchedRef.current - lastSyncedRef.current;
+
+    const unsynced =
+      totalWatchedRef.current - lastSyncedRef.current;
     if (unsynced > 0) {
       await sendWatchTime(unsynced);
       lastSyncedRef.current = totalWatchedRef.current;
@@ -118,82 +141,31 @@ export default function Video() {
     triggerAnimation("pause");
   };
 
-  /** Overlay animations */
+  /* ---------- Controls ---------- */
   const triggerAnimation = (type) => {
     setAnimationType(type);
     setTimeout(() => setAnimationType(null), 800);
   };
 
-  /** Skip 10s */
   const skip = (sec) => {
-    const videoEl = videoRef.current;
-    if (!videoEl) return;
-    videoEl.currentTime = Math.min(
-      Math.max(0, videoEl.currentTime + sec),
-      videoEl.duration || Infinity
+    const vid = videoRef.current;
+    if (!vid) return;
+    vid.currentTime = Math.min(
+      Math.max(0, vid.currentTime + sec),
+      vid.duration || Infinity
     );
     triggerAnimation(sec > 0 ? "forward" : "backward");
   };
 
-  /** Mobile double tap skip */
   const handleTouch = (e) => {
-    const now = new Date().getTime();
-    const gap = now - lastTap;
-    if (gap < 300 && e.targetTouches.length === 1) {
+    const now = Date.now();
+    if (now - lastTap < 300) {
       const tapX = e.changedTouches[0].clientX;
-      const width = window.innerWidth;
-      if (tapX < width / 2) skip(-10);
+      if (tapX < window.innerWidth / 2) skip(-10);
       else skip(10);
     }
     lastTap = now;
   };
-
-  /** Keyboard shortcuts */
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (
-        document.activeElement.tagName === "INPUT" ||
-        document.activeElement.tagName === "TEXTAREA"
-      )
-        return;
-
-      const vid = videoRef.current;
-      if (!vid) return;
-
-      if (e.code === "ArrowRight") {
-        e.preventDefault();
-        skip(10);
-      } else if (e.code === "ArrowLeft") {
-        e.preventDefault();
-        skip(-10);
-      } else if (e.code === "Space") {
-        e.preventDefault();
-        if (vid.paused) {
-          vid.play();
-        } else {
-          vid.pause();
-          triggerAnimation("pause");
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  /** Fullscreen fix for overlay */
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      const container = containerRef.current;
-      if (document.fullscreenElement && container) {
-        container.classList.add("fullscreen-active");
-      } else {
-        container?.classList.remove("fullscreen-active");
-      }
-    };
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () =>
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, []);
 
   useEffect(() => {
     const vid = videoRef.current;
@@ -202,24 +174,7 @@ export default function Video() {
     return () => vid.removeEventListener("touchend", handleTouch);
   }, []);
 
-  useEffect(() => {
-    const handleUnload = async () => {
-      await handlePauseOrEnd();
-    };
-    window.addEventListener("beforeunload", handleUnload);
-    return () => window.removeEventListener("beforeunload", handleUnload);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (syncTimerRef.current) {
-        clearInterval(syncTimerRef.current);
-        syncTimerRef.current = null;
-      }
-    };
-  }, []);
-
-  /** Like/Share/Comments */
+  /* ---------- Like / Share ---------- */
   const like = async () => {
     try {
       await api.post(`/videos/${id}/like`);
@@ -232,10 +187,13 @@ export default function Video() {
   const share = async () => {
     try {
       if (navigator.share) {
-        await navigator.share({ title: video.title, url: window.location.href });
+        await navigator.share({
+          title: video.title,
+          url: window.location.href,
+        });
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        toast.info("Link copied to clipboard");
+        toast.info("Link copied");
       }
       await api.post(`/videos/${id}/share`);
     } catch {
@@ -243,6 +201,7 @@ export default function Video() {
     }
   };
 
+  /* ---------- Comments ---------- */
   const addComment = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
@@ -256,12 +215,6 @@ export default function Video() {
   };
 
   const delComment = async (cid) => {
-    const c = comments.find((c) => c._id === cid);
-    if (!c) return;
-    if (!user || String(c.user?._id) !== String(user.id || user._id)) {
-      toast.warn("You can only delete your own comments");
-      return;
-    }
     try {
       await api.delete(`/comments/item/${cid}`);
       load();
@@ -275,180 +228,162 @@ export default function Video() {
     if (diff < 60) return `${diff}s ago`;
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
-    return new Date(date).toLocaleDateString();
+    return `${Math.floor(diff / 86400)}d ago`;
   };
 
   if (!video) return <div className="loading">Loading...</div>;
-  const likedByUser = user && video.likes?.includes(user.id || user._id);
+
+  const likedByUser =
+    user && video.likes?.includes(user.id || user._id);
 
   return (
     <>
       <Helmet>
-        <title>Home – Streamify</title>
-        <meta
-          name="description"
-          content="Watch trending and creative videos on Streamify. Join the community and share your talent!"
-        />
-        <link rel="canonical" href="https://streamify-phi-taupe.vercel.app/" />
+        <title>{video.title} – Streamify</title>
       </Helmet>
 
-    <div className="video-page container-fluid py-4">
-      <div className="row gx-5 gy-4">
-        <div className="col-lg-8">
-          <div ref={containerRef} className="video-player-container position-relative shadow-sm">
-            <video
-              ref={videoRef}
-              className="video-player"
-              src={video.url}
-              controls
-              poster={video.thumbnail || ""}
-              onPlay={handlePlay}
-              onPause={handlePauseOrEnd}
-              onEnded={handlePauseOrEnd}
-              onDoubleClick={(e) => {
-                e.preventDefault();
-                const rect = e.target.getBoundingClientRect();
-                if (e.clientX < rect.left + rect.width / 2) skip(-10);
-                else skip(10);
-              }}
-            />
-            {animationType === "pause" && (
-              <div className="video-symbol pause active">
-                <div className="pause-bars">
-                  <div className="bar left"></div>
-                  <div className="bar right"></div>
-                </div>
-              </div>
-            )}
-            {animationType === "forward" && (
-              <div className="video-symbol forward active">
-                <FaRedoAlt className="symbol-icon" />
-                <span className="symbol-text">10</span>
-              </div>
-            )}
-            {animationType === "backward" && (
-              <div className="video-symbol backward active">
-                <FaUndoAlt className="symbol-icon" />
-                <span className="symbol-text">10</span>
-              </div>
-            )}
-          </div>
-
-          <h3 className="video-title mt-3">{video.title}</h3>
-          <p className="text-secondary small mb-1">
-            Uploaded {video.createdAt ? timeAgo(video.createdAt) : ""}
-          </p>
-
-          <hr className="video-divider" />
-          <h6 className="text-light mb-2">Description</h6>
-          <p className="text-secondary video-description">{video.description}</p>
-
-          <div className="d-flex align-items-center gap-3 mt-3 video-actions">
-            <button
-              className={`btn btn-like ${likedByUser ? "liked" : ""}`}
-              onClick={like}
+      <div className="video-page container-fluid py-4">
+        <div className="row gx-5 gy-4">
+          {/* ---------- MAIN COLUMN ---------- */}
+          <div className="col-lg-8">
+            <div
+              ref={containerRef}
+              className="video-player-container position-relative"
             >
-              <FaHeart className="me-2" /> {video.likes?.length || 0}
-            </button>
-            <button className="btn btn-share" onClick={share}>
-              <FaShareAlt className="me-2" /> Share
-            </button>
-            <div className="text-secondary d-flex align-items-center gap-1">
-              <FaEye /> {video.views || 0} views
+              <video
+                ref={videoRef}
+                className="video-player"
+                src={video.url}
+                controls
+                poster={video.thumbnail || ""}
+                onPlay={handlePlay}
+                onPause={handlePauseOrEnd}
+                onEnded={handlePauseOrEnd}
+                onDoubleClick={(e) => {
+                  const rect = e.target.getBoundingClientRect();
+                  if (e.clientX < rect.left + rect.width / 2) skip(-10);
+                  else skip(10);
+                }}
+              />
+              {animationType === "forward" && (
+                <div className="video-symbol forward active">
+                  <FaRedoAlt /> 10
+                </div>
+              )}
+              {animationType === "backward" && (
+                <div className="video-symbol backward active">
+                  <FaUndoAlt /> 10
+                </div>
+              )}
             </div>
-          </div>
 
-          {/* Comments */}
-          <div className="comment-section mt-5 p-3 rounded shadow-sm">
-            <h5 className="mb-3 text-light">Comments ({comments.length})</h5>
-            {user && (
-              <form onSubmit={addComment} className="d-flex mb-3 gap-2">
-                <input
-                  className="form-control bg-dark text-light border-0"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder="Add a comment..."
-                />
-                <button className="btn btn-primary">Post</button>
-              </form>
-            )}
-            <div className="comment-list">
+            <h3 className="mt-3">{video.title}</h3>
+            <p className="text-secondary small">
+              Uploaded {timeAgo(video.createdAt)}
+            </p>
+
+            <div className="mt-3">
+              <h6 className="text-light mb-2">Description</h6>
+              <p className="video-description">
+                {video.description || "No description provided."}
+              </p>
+            </div>
+
+            <div className="video-actions d-flex gap-3">
+              <button
+                className={`btn btn-like ${
+                  likedByUser ? "liked" : ""
+                }`}
+                onClick={like}
+              >
+                <FaHeart /> {video.likes?.length || 0}
+              </button>
+              <button className="btn btn-share" onClick={share}>
+                <FaShareAlt /> Share
+              </button>
+              
+              <span className="text-secondary">
+                <FaEye /> {video.views || 0}
+              </span>
+            </div>
+
+            {/* ---------- COMMENTS ---------- */}
+            <div className="comment-section mt-5">
+              <h5>Comments ({comments.length})</h5>
+
+              {user && (
+                <form
+                  onSubmit={addComment}
+                  className="d-flex gap-2 mb-3"
+                >
+                  <input
+                    className="form-control bg-dark text-light"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Add a comment..."
+                  />
+                  <button className="btn btn-primary">Post</button>
+                </form>
+              )}
+
               {comments.length > 0 ? (
-                comments.map((c) => (
-                  <div key={c._id} className="comment-item d-flex align-items-start">
-                    <img
-                      src={
-                        c.user?.avatar ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          c.user?.name || "User"
-                        )}`
-                      }
-                      alt={c.user?.name}
-                      className="comment-avatar me-3"
-                    />
-                    <div className="comment-body flex-grow-1">
-                      <div className="comment-header">
-                        <div className="comment-info">
-                          <small className="comment-author">
-                            {c.user?.name || "Unknown User"}
-                          </small>
-                          <small className="comment-timestamp">
-                            {c.createdAt ? timeAgo(c.createdAt) : ""}
-                          </small>
-                        </div>
-                        {user &&
-                          c.user &&
-                          String(c.user._id) === String(user.id || user._id) && (
-                            <button
-                              className="icon-delete-btn"
-                              title="Delete comment"
-                              onClick={() => delComment(c._id)}
-                            >
-                              <FaTrashAlt size={15} />
-                            </button>
-                          )}
-                      </div>
-                      <p className="comment-text mb-0">{c.text}</p>
-                    </div>
-                  </div>
-                ))
+                <CommentList
+                  comments={comments}
+                  meId={user?.id || user?._id}
+                  onDelete={delComment}
+                />
               ) : (
                 <p className="text-secondary small">
-                  No comments yet. Be the first!
+                  No comments yet.
                 </p>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Related videos */}
-        <div className="col-lg-4">
-          <div className="related-section p-3 rounded shadow-sm">
-            <h5 className="mb-3 text-light">Related Videos</h5>
-            <div className="related-list">
-              {related.map((rv) => (
-                <Link
+            {/* ---------- MOBILE: NORMAL VIDEOS ---------- */}
+            {isMobile && (
+              <div className="mt-5">
+                <h5 className="mb-3">More Videos</h5>
+                <div className="d-flex flex-column gap-3">
+                  {allVideos.slice(0, 6).map((v) => (
+                    <VideoCard key={v._id} video={v} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ---------- DESKTOP: RELATED VIDEOS ---------- */}
+          {!isMobile && (
+            <div className="col-lg-4">
+              <div className="related-section p-3">
+                <h5 className="mb-3">Related Videos</h5>
+                {related.map((rv) => (
+                  <Link
                   key={rv._id}
                   to={`/video/${rv._id}`}
-                  className="related-item d-flex mb-3 text-decoration-none"
+                  className="related-item"
                 >
-                  <div className="related-thumb me-3">
-                    <video src={rv.url} muted poster={rv.thumbnail || ""}></video>
+                  <div className="related-thumb">
+                    <video
+                      src={rv.url}
+                      muted
+                      poster={rv.thumbnail || ""}
+                    />
                   </div>
+
                   <div className="related-info">
-                    <p className="related-title text-light mb-1">{rv.title}</p>
-                    <small className="text-secondary">
+                    <p className="related-title">{rv.title}</p>
+                    <span className="related-author">
                       {rv.user?.name || "Unknown"}
-                    </small>
+                    </span>
                   </div>
                 </Link>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
-    </div>
     </>
   );
 }
