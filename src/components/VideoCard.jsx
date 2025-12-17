@@ -22,7 +22,9 @@ function VideoCard({ video }) {
 
   const avatarUrl =
     video.user?.avatar ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(video.user?.name || 'User')}`;
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      video.user?.name || 'User'
+    )}`;
 
   const timeAgo = (date) => {
     const diff = Math.floor((Date.now() - new Date(date)) / 1000);
@@ -49,8 +51,11 @@ function VideoCard({ video }) {
             muted
             playsInline
             preload="metadata"
-            poster={video.thumbnail || ''}
+            poster={video.thumbnail}
             className="vcard-preview"
+            onError={(e) => {
+              e.currentTarget.poster = '/assets/default-thumbnail.jpg';
+            }}
           />
           <div className="vcard-overlay">
             <FaPlayCircle size={50} className="vcard-play-icon" />
@@ -64,7 +69,14 @@ function VideoCard({ video }) {
 
           <div className="vcard-meta">
             <div className="vcard-author">
-              <img src={avatarUrl} alt="user" className="vcard-author-avatar" />
+              <img
+                src={avatarUrl}
+                alt="user"
+                className="vcard-author-avatar"
+                onError={(e) => {
+                  e.target.src = '/assets/default-avatar.png';
+                }}
+              />
               <span className="vcard-author-name">
                 {video.user?.name || 'Unknown'}
               </span>
@@ -76,7 +88,8 @@ function VideoCard({ video }) {
               </span>
               <span className="vcard-meta-separator">•</span>
               <span className="vcard-meta-item">
-                <FaClock className="vcard-meta-icon" /> {timeAgo(video.createdAt)}
+                <FaClock className="vcard-meta-icon" />{' '}
+                {timeAgo(video.createdAt)}
               </span>
             </div>
           </div>

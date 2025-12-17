@@ -1,5 +1,5 @@
 import React from "react";
-import "./videoSkeleton.css";
+import "./VideoSkeleton.css";
 
 export default function VideoCardSkeleton() {
   return (

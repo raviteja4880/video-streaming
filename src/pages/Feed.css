@@ -140,36 +140,18 @@
   padding: 0 2rem;
 }
 
-/* ---------- Horizontal Scroll Row ---------- */
+/* ---------- Video Grid Layout ---------- */
 .video-scroll-row {
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
   padding: 1rem 0 2rem;
-  scrollbar-width: thin;
-  scrollbar-color: #00bcd4 #111;
-}
-
-.video-scroll-row::-webkit-scrollbar {
-  height: 8px;
-}
-.video-scroll-row::-webkit-scrollbar-track {
-  background: #111;
-  border-radius: 10px;
-}
-.video-scroll-row::-webkit-scrollbar-thumb {
-  background: #00bcd4;
-  border-radius: 10px;
 }
 
 /* Each Video Card */
 .video-scroll-row .vcard {
-  flex: 0 0 calc(25% - 1.5rem);
-  min-width: 280px;
-  max-width: 360px;
-  scroll-snap-align: start;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* ---------- Scroll Buttons ---------- */
@@ -198,18 +180,20 @@
   right: 0.5rem;
 }
 
-/* ---------- Responsive ---------- */
 @media (max-width: 768px) {
+  .video-scroll-wrapper {
+    padding: 0;
+  }
+
   .video-scroll-row {
-    flex-wrap: wrap;
-    overflow-x: hidden;
+    display: grid;                 
+    grid-template-columns: 1fr;   
     gap: 1rem;
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
 
   .video-scroll-row .vcard {
-    flex: 1 1 calc(50% - 1rem);
-    min-width: auto;
+    width: 100%;
     max-width: 100%;
   }
 
@@ -221,16 +205,11 @@
     width: 85%;
     padding: 1.5rem;
   }
-
-  .voice-wave {
-    width: 50px;
-    height: 50px;
-  }
 }
 
 @media (max-width: 480px) {
-  .video-scroll-row .vcard {
-    flex: 1 1 100%;
+  .video-scroll-row {
+    padding: 0 0.5rem;
   }
 
   .search-bar {
@@ -238,17 +217,10 @@
   }
 
   .search-input-container {
-    max-width: 100%;
     border-radius: 25px;
   }
 
   .mic-btn {
     padding: 0.3rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .video-scroll-wrapper {
-    padding: 0;
   }
 }

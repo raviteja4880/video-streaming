@@ -6,7 +6,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { UploadProvider } from "./context/UploadContext";
 import Navbar from "./components/Navbar";
-import VideoSkeleton from "./components/VideoSkeleton";
 import UploadStatusBar from "./components/UploadStatusBar";
 import MobileBottomNav from "./components/MobileBottomNav";
 import RequireLogin from "./components/RequireLogin";

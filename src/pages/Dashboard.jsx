@@ -329,7 +329,7 @@ export default function Dashboard() {
           <FaUser className="stat-icon text-success" />
           <div>
             <h5>{(stats.userWatchTime / 60).toFixed(1)} min</h5>
-            <small>User Watch Time</small>
+            <small>Users Watch Time</small>
           </div>
         </div>
 
