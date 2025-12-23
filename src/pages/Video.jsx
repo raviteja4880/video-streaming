@@ -9,7 +9,6 @@ import {
   FaEye,
   FaRedoAlt,
   FaUndoAlt,
-  FaTrashAlt,
 } from "react-icons/fa";
 import "../pages/video.css";
 import { Helmet } from "react-helmet-async";
@@ -19,6 +18,17 @@ import CommentList from "../components/CommentList";
 export default function Video() {
   const { id } = useParams();
   const { user } = useAuth();
+
+  /* ---------- Guest ID (REQUIRED FOR DB LIKES) ---------- */
+  const getGuestId = () => {
+    let gid = localStorage.getItem("guestId");
+    if (!gid) {
+      gid = crypto.randomUUID();
+      localStorage.setItem("guestId", gid);
+    }
+    return gid;
+  };
+  const guestId = !user ? getGuestId() : null;
 
   const [video, setVideo] = useState(null);
   const [comments, setComments] = useState([]);
@@ -66,23 +76,16 @@ export default function Video() {
 
   useEffect(() => {
     load();
+
     totalWatchedRef.current = 0;
     lastPlayTimeRef.current = null;
     lastSyncedRef.current = 0;
+    viewRegisteredRef.current = false;
+
     if (syncTimerRef.current) clearInterval(syncTimerRef.current);
   }, [id]);
 
   /* ---------- Watch Tracking ---------- */
-  const registerView = async () => {
-    try {
-      const key = `viewed_${id}_${user?.id || "guest"}`;
-      if (!localStorage.getItem(key)) {
-        await api.post(`/videos/${id}/view`);
-        localStorage.setItem(key, "true");
-      }
-    } catch {}
-  };
-
   const addToHistory = async () => {
     if (!user) return;
     try {
@@ -92,15 +95,25 @@ export default function Video() {
 
   const sendWatchTime = async (seconds) => {
     if (seconds <= 0) return;
+
+    if (!viewRegisteredRef.current && totalWatchedRef.current >= 5) {
+      try {
+        await api.post(`/videos/${id}/view`, {
+          viewerId: guestId,
+        });
+        viewRegisteredRef.current = true;
+      } catch {}
+    }
+
     try {
       await api.post(`/videos/${id}/watchtime`, {
         secondsWatched: seconds,
       });
     } catch {}
   };
+  const viewRegisteredRef = useRef(false);
 
   const handlePlay = () => {
-    registerView();
     addToHistory();
     lastPlayTimeRef.current = Date.now();
 
@@ -123,6 +136,15 @@ export default function Video() {
       }, 5000);
     }
   };
+  
+  useEffect(() => {
+  return () => {
+    if (syncTimerRef.current) {
+      clearInterval(syncTimerRef.current);
+      syncTimerRef.current = null;
+    }
+  };
+}, []);
 
   const handlePauseOrEnd = async () => {
     if (!lastPlayTimeRef.current) return;
@@ -177,7 +199,9 @@ export default function Video() {
   /* ---------- Like / Share ---------- */
   const like = async () => {
     try {
-      await api.post(`/videos/${id}/like`);
+      await api.post(`/videos/${id}/like`, {
+        viewerId: guestId,
+      });
       load();
     } catch {
       toast.error("Failed to like video");
@@ -233,8 +257,10 @@ export default function Video() {
 
   if (!video) return <div className="loading">Loading...</div>;
 
+  /* ---------- LIKE STATE (USER + GUEST) ---------- */
   const likedByUser =
-    user && video.likes?.includes(user.id || user._id);
+    (user && video.likes?.includes(user._id)) ||
+    (!user && video.likes?.includes(guestId));
 
   return (
     <>
@@ -244,7 +270,6 @@ export default function Video() {
 
       <div className="video-page container-fluid py-4">
         <div className="row gx-5 gy-4">
-          {/* ---------- MAIN COLUMN ---------- */}
           <div className="col-lg-8">
             <div
               ref={containerRef}
@@ -282,40 +307,28 @@ export default function Video() {
               Uploaded {timeAgo(video.createdAt)}
             </p>
 
-            <div className="mt-3">
-              <h6 className="text-light mb-2">Description</h6>
-              <p className="video-description">
-                {video.description || "No description provided."}
-              </p>
-            </div>
-
             <div className="video-actions d-flex gap-3">
               <button
-                className={`btn btn-like ${
-                  likedByUser ? "liked" : ""
-                }`}
+                className={`btn btn-like ${likedByUser ? "liked" : ""}`}
                 onClick={like}
               >
                 <FaHeart /> {video.likes?.length || 0}
               </button>
+
               <button className="btn btn-share" onClick={share}>
                 <FaShareAlt /> Share
               </button>
-              
+
               <span className="text-secondary">
                 <FaEye /> {video.views || 0}
               </span>
             </div>
 
-            {/* ---------- COMMENTS ---------- */}
             <div className="comment-section mt-5">
               <h5>Comments ({comments.length})</h5>
 
-              {user && (
-                <form
-                  onSubmit={addComment}
-                  className="d-flex gap-2 mb-3"
-                >
+              {user ? (
+                <form onSubmit={addComment} className="d-flex gap-2 mb-3">
                   <input
                     className="form-control bg-dark text-light"
                     value={text}
@@ -324,6 +337,17 @@ export default function Video() {
                   />
                   <button className="btn btn-primary">Post</button>
                 </form>
+              ) : (
+                <div className="d-flex gap-2 mb-3 align-items-center">
+                  <input
+                    className="form-control bg-dark text-secondary"
+                    disabled
+                    placeholder="Sign in to add a comment"
+                  />
+                  <Link to="/login" className="btn btn-outline-primary">
+                    Sign in
+                  </Link>
+                </div>
               )}
 
               {comments.length > 0 ? (
@@ -333,13 +357,10 @@ export default function Video() {
                   onDelete={delComment}
                 />
               ) : (
-                <p className="text-secondary small">
-                  No comments yet.
-                </p>
+                <p className="text-secondary small">No comments yet.</p>
               )}
             </div>
 
-            {/* ---------- MOBILE: NORMAL VIDEOS ---------- */}
             {isMobile && (
               <div className="mt-5">
                 <h5 className="mb-3">More Videos</h5>
@@ -352,32 +373,43 @@ export default function Video() {
             )}
           </div>
 
-          {/* ---------- DESKTOP: RELATED VIDEOS ---------- */}
           {!isMobile && (
             <div className="col-lg-4">
               <div className="related-section p-3">
                 <h5 className="mb-3">Related Videos</h5>
                 {related.map((rv) => (
                   <Link
-                  key={rv._id}
-                  to={`/video/${rv._id}`}
-                  className="related-item"
-                >
-                  <div className="related-thumb">
-                    <video
-                      src={rv.url}
-                      muted
-                      poster={rv.thumbnail || ""}
-                    />
-                  </div>
+                    key={rv._id}
+                    to={`/video/${rv._id}`}
+                    className="related-item"
+                  >
+                    <div className="related-thumb">
+                      <video
+                        src={rv.url}
+                        muted
+                        poster={rv.thumbnail || ""}
+                      />
+                    </div>
 
-                  <div className="related-info">
-                    <p className="related-title">{rv.title}</p>
-                    <span className="related-author">
-                      {rv.user?.name || "Unknown"}
-                    </span>
-                  </div>
-                </Link>
+                    <div className="related-info">
+                      <p className="related-title">{rv.title}</p>
+                      <div className="related-author-row">
+                        <img
+                          className="related-avatar"
+                          src={
+                            rv.user?.avatar ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                              rv.user?.name || "User"
+                            )}&background=0d1117&color=fff`
+                          }
+                          alt={rv.user?.name}
+                        />
+                        <span className="related-author">
+                          {rv.user?.name || "Unknown"}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>

@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar";
 import UploadStatusBar from "./components/UploadStatusBar";
 import MobileBottomNav from "./components/MobileBottomNav";
 import RequireLogin from "./components/RequireLogin";
+import Manage from "./pages/Manage";
 import "react-toastify/dist/ReactToastify.css";
 
 // ---------- Lazy-loaded Pages ----------
@@ -167,6 +168,23 @@ function AnimatedRoutes() {
           }
         />
 
+          <Route
+          path="/creator/video/:id"
+          element={
+            <RequireLogin>
+              <motion.div
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
+                transition={pageTransition}
+              >
+                <Manage />
+              </motion.div>
+            </RequireLogin>
+          }
+        />
+
         <Route
           path="/history"
           element={
@@ -225,7 +243,7 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      {/* ✅ Wrap the entire app in AuthGate */}
+      {/* Wrap the entire app in AuthGate */}
       <AuthGate>
         <UploadProvider>
           <div

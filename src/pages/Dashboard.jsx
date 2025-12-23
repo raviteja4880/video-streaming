@@ -448,20 +448,18 @@ export default function Dashboard() {
             <div className="video-thumb-container">
               <video src={v.url} muted className="video-thumb" />
               <div className="video-hover-overlay">
-                <button
-                  className="btn btn-sm btn-light d-flex align-items-center gap-1"
-                  onClick={() => startEdit(v)}
-                >
-                  <FaEdit /> Edit
-                </button>
-                <button
-                  className="btn btn-sm btn-danger d-flex align-items-center gap-1"
-                  onClick={() => confirmDelete(v._id, v.title)}
-                  disabled={uploading}
-                >
-                  <FaTrashAlt /> Delete
-                </button>
-              </div>
+              <button
+                className="btn btn-sm btn-info d-flex align-items-center gap-1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigate(`/creator/video/${v._id}`);
+                }}
+              >
+                <FaChartLine /> Manage
+              </button>
+            </div>
+            
             </div>
 
             <div className="video-meta">

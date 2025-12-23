@@ -286,6 +286,11 @@ input.form-control.bg-dark:focus {
   transform: scale(1.2);
 }
 
+.comment-section input:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
 /* ==============================
    MOBILE POLISH
 ============================== */
@@ -366,7 +371,6 @@ input.form-control.bg-dark:focus {
 
   /* Proper wrapping + clamp */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -378,6 +382,25 @@ input.form-control.bg-dark:focus {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.related-author-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.related-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #333;
+}
+
+.related-author {
+  font-size: 0.85rem;
+  color: #aaa;
 }
 
 /* Scrollbar */

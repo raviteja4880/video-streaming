@@ -1,1 +1,0 @@
-import{j as e}from"./index-DyDKpjxL.js";function n(){return e.jsxs("div",{className:"text-center p-5",children:[e.jsx("h3",{children:"404"}),e.jsx("p",{children:"Page not found"})]})}export{n as default};
